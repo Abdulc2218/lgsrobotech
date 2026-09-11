@@ -23,7 +23,7 @@ ALLOWED_RECEIPT_EXT = {".png", ".jpg", ".jpeg", ".webp", ".pdf"}
 RECEIPT_MIME = {".png": "image/png", ".jpg": "image/jpeg",
                 ".jpeg": "image/jpeg", ".webp": "image/webp",
                 ".pdf": "application/pdf"}
-MAX_RECEIPT_MB = 5
+MAX_RECEIPT_MB = 4   # keep under Vercel's ~4.5 MB request-body limit
 
 
 def _load_local_secrets():
