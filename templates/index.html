@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-inner">
+    <img class="hero-crest" src="{{ url_for('static', filename='lgs-logo.png') }}"
+         alt="Lahore Grammar School crest">
+    <p class="hero-school">LAHORE GRAMMAR SCHOOL — WAPDA TOWN BRANCH</p>
+    <p class="hero-invite">YOU ARE INVITED TO</p>
+    <h1 class="hero-title">ROBOTECH<br>CHALLENGE <span class="accent">6.0</span></h1>
+    <p class="hero-tagline">BUILD TODAY. <span class="green">TRANSFORM</span> TOMORROW.</p>
+    <div class="hero-chips">
+      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> {{ info.date }}</span>
+      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> {{ info.time }}</span>
+      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-recycle"/></svg> Recycle to Upcycle</span>
+    </div>
+    <div class="hero-actions">
+      <a href="{{ url_for('register') }}" class="btn btn-lg">Register Your School</a>
+      <a href="#challenges" class="btn btn-lg btn-outline">Explore Challenges</a>
+    </div>
+    <p class="hero-deadline"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg> Registration deadline: <strong>{{ info.deadline }}</strong></p>
+  </div>
+</section>
+
+<section class="section" id="details">
+  <h2>Event <span class="accent">Details</span></h2>
+  <div class="cards-4">
+    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div><h3>Date</h3><p>{{ info.date }}</p></div>
+    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></div><h3>Timings</h3><p>{{ info.time }}</p></div>
+    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg></div><h3>Venue</h3><p>{{ info.venue }}</p></div>
+    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg></div><h3>Registration Deadline</h3><p>{{ info.deadline }}</p></div>
+  </div>
+</section>
+
+<section class="section" id="categories">
+  <h2>Eligibility <span class="accent">Categories</span></h2>
+  <p class="section-sub">Participants compete in two categories based on their grade level.</p>
+  <div class="cards-2">
+    <div class="card cat-card">
+      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-flame"/></svg></div>
+      <h3>Jet Fire</h3>
+      <p class="cat-grades">Grades V – VII</p>
+      <p>Beginner-friendly tracks and lighter robot specs for younger innovators.</p>
+    </div>
+    <div class="card cat-card">
+      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></div>
+      <h3>Optimus Prime</h3>
+      <p class="cat-grades">Grades VIII – X Matric / XI O-Level</p>
+      <p>Tougher problems, bigger robots, and advanced competition standards.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="challenges">
+  <h2>The <span class="accent">11 Challenges</span></h2>
+  <p class="section-sub">Teams of up to 2 participants. A school may send multiple teams in any challenge.</p>
+  <div class="challenge-grid">
+    {% for key, ch in challenges.items() %}
+    <div class="card challenge-card">
+      <div class="challenge-head">
+        <span class="challenge-icon"><svg class="icon" aria-hidden="true"><use href="#i-{{ ch.icon }}"/></svg></span>
+        <h3>{{ ch.name }}</h3>
+      </div>
+      <p>{{ ch.desc }}</p>
+      <ul class="spec-list">
+        {% for s in ch.specs %}<li>{{ s }}</li>{% endfor %}
+      </ul>
+      <div class="challenge-foot">
+        <span class="fee">Rs {{ "{:,}".format(ch.fee) }} / team</span>
+        <a href="{{ url_for('register') }}" class="btn btn-small">Register</a>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="section" id="rules">
+  <h2>Rules & <span class="accent">Regulations</span></h2>
+  <div class="cards-2">
+    <div class="card">
+      <h3>General Rules</h3>
+      <ul class="rule-list">
+        <li>Only school-registered teams are allowed.</li>
+        <li>Each school must send at least one chaperone with its teams.</li>
+        <li>Teams must arrive at the venue well in time.</li>
+        <li>Bring your own laptops, internet devices / mobile hotspots — with Arduino, Photoshop, Unity or other required software pre-installed.</li>
+        <li>Students must wear name tags with their branch name.</li>
+        <li>No external help (from teachers etc.) during the competition.</li>
+        <li>Participant names must be sent by <strong>{{ info.deadline }}</strong>.</li>
+        <li>Multiple teams may participate from one school.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Code of Conduct</h3>
+      <ul class="rule-list">
+        <li><strong>Attire:</strong> formal dress, Eastern or Western, is mandatory.</li>
+        <li><strong>Conduct:</strong> misconduct may lead to removal from the premises; the Executive Council's decisions are final.</li>
+        <li><strong>Photography:</strong> no photos/videos of staff or participants without consent — official coverage is by the event media team only.</li>
+        <li><strong>Zero tolerance</strong> for harassment, bullying, or abusive remarks — violations lead to expulsion of the entire delegation.</li>
+        <li><strong>Liability waiver:</strong> every participant and faculty advisor must submit a signed waiver at the registration desk before the opening ceremony.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section cta-band">
+  <h2>Ready to <span class="green">build the future</span>?</h2>
+  <p>Register your teams before {{ info.deadline }} — spots fill fast.</p>
+  <a href="{{ url_for('register') }}" class="btn btn-lg">Register Now</a>
+  <p class="follow-line">Follow
+    <a href="https://instagram.com/{{ info.instagram }}" target="_blank" rel="noopener" class="social-link">
+      <svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg> @{{ info.instagram }}</a>
+    for updates &amp; announcements</p>
+</section>
+
+{% endblock %}

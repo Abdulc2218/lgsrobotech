@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Organizer Login — Robotech Challenge 6.0{% endblock %}
+{% block content %}
+
+<section class="section form-section login-section">
+  <div class="card login-card">
+    <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg></div>
+    <h2>Organizer <span class="accent">Login</span></h2>
+    <p class="section-sub">This area is for the Team Robotech organizing committee only.</p>
+    {% if error %}
+    <div class="alert">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+      <label>Password
+        <input type="password" name="password" required autofocus>
+      </label>
+      <button type="submit" class="btn btn-lg login-btn">Log In</button>
+    </form>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% block title %}Register — Robotech Challenge 6.0{% endblock %}
+{% block content %}
+
+<section class="section form-section">
+  <h2>Online <span class="accent">Registration</span></h2>
+  <p class="section-sub">Fill in your school's details, add a team for each challenge you're entering,
+  and we'll calculate the total fee. Deadline: <strong>{{ info.deadline }}</strong>.</p>
+
+  {% if errors %}
+  <div class="alert">
+    <strong>Please fix the following:</strong>
+    <ul>{% for e in errors %}<li>{{ e }}</li>{% endfor %}</ul>
+  </div>
+  {% endif %}
+
+  <form method="post" class="reg-form" enctype="multipart/form-data">
+    <fieldset class="card">
+      <legend>School Information</legend>
+      <div class="field-grid">
+        <label>School Name *
+          <input type="text" name="school" required maxlength="120"
+                 value="{{ form.get('school', '') }}" placeholder="e.g. LGS Johar Town">
+        </label>
+        <label>Focal Person / Relevant Teacher *
+          <input type="text" name="focal_name" required maxlength="80"
+                 value="{{ form.get('focal_name', '') }}" placeholder="Full name">
+        </label>
+        <label>Contact Number (active on WhatsApp) *
+          <input type="tel" name="phone" required maxlength="20"
+                 value="{{ form.get('phone', '') }}" placeholder="03XX XXXXXXX">
+        </label>
+        <label>Email of Focal Person *
+          <input type="email" name="email" required maxlength="120"
+                 value="{{ form.get('email', '') }}" placeholder="name@school.edu.pk">
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset class="card">
+      <legend>Teams</legend>
+      <p class="hint">Max 2 participants per team. Add one row per team — you can enter
+      multiple teams, in the same or different challenges.</p>
+      <div id="teams"></div>
+      <button type="button" class="btn btn-outline" id="add-team">+ Add Another Team</button>
+    </fieldset>
+
+    <div class="card total-card">
+      <span>Total Registration Fee</span>
+      <span class="total" id="total-fee">Rs 0</span>
+    </div>
+
+    <fieldset class="card payment-fieldset">
+      <legend>Payment &amp; Proof of Transaction</legend>
+      <ol class="pay-steps">
+        <li>Transfer the <strong>total fee shown above</strong> to:
+          <p class="bank-box">{{ info.bank }}</p>
+        </li>
+        <li>Take a screenshot (or photo) of the transaction receipt.</li>
+        <li>Upload it below — <strong>registration is only complete with proof of payment</strong>.</li>
+      </ol>
+      <label class="file-label">Transaction Screenshot *
+        <input type="file" name="receipt" required
+               accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf">
+      </label>
+      <p class="hint">Accepted: PNG, JPG, WEBP or PDF — max 5 MB.</p>
+    </fieldset>
+
+    <button type="submit" class="btn btn-lg">Complete Registration</button>
+  </form>
+</section>
+
+<template id="team-row-template">
+  <div class="team-row card">
+    <div class="team-row-head">
+      <strong class="team-label">Team</strong>
+      <button type="button" class="remove-team" title="Remove team" aria-label="Remove team"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <div class="field-grid">
+      <label>Challenge *
+        <select name="challenge[]" class="challenge-select" required>
+          <option value="" disabled selected>Select a challenge…</option>
+          {% for key, ch in challenges.items() %}
+          <option value="{{ key }}" data-fee="{{ ch.fee }}">{{ ch.name }} — Rs {{ "{:,}".format(ch.fee) }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Category *
+        <select name="category[]" required>
+          <option value="" disabled selected>Select a category…</option>
+          {% for key, label in categories.items() %}
+          <option value="{{ key }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>Participant 1 *
+        <input type="text" name="member1[]" maxlength="80" placeholder="Full name" required>
+      </label>
+      <label>Participant 2 (optional)
+        <input type="text" name="member2[]" maxlength="80" placeholder="Full name">
+      </label>
+    </div>
+  </div>
+</template>
+
+<script>
+(function () {
+  const teamsBox = document.getElementById("teams");
+  const template = document.getElementById("team-row-template");
+  const totalEl = document.getElementById("total-fee");
+
+  function renumber() {
+    teamsBox.querySelectorAll(".team-label").forEach(function (el, i) {
+      el.textContent = "Team " + (i + 1);
+    });
+  }
+
+  function updateTotal() {
+    let total = 0;
+    teamsBox.querySelectorAll(".challenge-select").forEach(function (sel) {
+      const opt = sel.selectedOptions[0];
+      if (opt && opt.dataset.fee) total += parseInt(opt.dataset.fee, 10);
+    });
+    totalEl.textContent = "Rs " + total.toLocaleString();
+  }
+
+  function addTeam() {
+    const row = template.content.cloneNode(true);
+    teamsBox.appendChild(row);
+    const added = teamsBox.lastElementChild;
+    added.querySelector(".remove-team").addEventListener("click", function () {
+      added.remove();
+      renumber();
+      updateTotal();
+    });
+    added.querySelector(".challenge-select").addEventListener("change", updateTotal);
+    renumber();
+  }
+
+  document.getElementById("add-team").addEventListener("click", addTeam);
+  addTeam(); // start with one team row
+})();
+</script>
+
+{% endblock %}
