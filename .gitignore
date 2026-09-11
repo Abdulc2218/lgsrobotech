@@ -1,0 +1,12 @@
+# Secrets — NEVER commit these
+secrets.local.json
+
+# Local data — real registrations stay off GitHub
+robotech.db
+uploads/
+registrations.csv
+
+# Build/packaging leftovers
+*.zip
+__pycache__/
+*.pyc
