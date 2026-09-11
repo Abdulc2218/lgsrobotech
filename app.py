@@ -685,7 +685,32 @@ def file_too_large(e):
                 f"{MAX_RECEIPT_MB} MB. Please compress it and try again."]), 413
 
 
-init_db()
+_db_ready = False
+
+
+def ensure_db():
+    """Initialize the schema once, lazily, so a database hiccup can't crash
+    the whole app at import time (which on serverless hosts 500s every page)."""
+    global _db_ready
+    if _db_ready:
+        return
+    try:
+        init_db()
+        _db_ready = True
+    except Exception as exc:
+        app.logger.error("init_db failed: %s", exc)
+
+
+@app.before_request
+def _init_db_before_request():
+    ensure_db()
+
+
+try:
+    ensure_db()
+except Exception:
+    pass
+
 
 if __name__ == "__main__":
     app.run(debug=True)
