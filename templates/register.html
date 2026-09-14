@@ -67,6 +67,9 @@
         <li><strong>Upload only your transaction screenshot</strong> — nothing else.
           The screenshot must clearly show the <strong>same Transaction ID / Reference
           Number</strong> you entered above, so we can match it to our bank statement.</li>
+        <li><strong>Enter a correct email address and WhatsApp phone number.</strong>
+          All confirmation and updates are sent there — a wrong email or number
+          means you will miss them.</li>
         <li><strong>Check the email you provided</strong> (including the Spam folder)
           after registering — we will email you there to confirm whether your
           registration has been <strong>accepted</strong> once payment is verified.</li>
@@ -168,19 +171,41 @@
   const phoneEl = document.getElementById("phone");
   const phoneMsg = document.getElementById("phone-msg");
 
+  // Real domains we compare against to catch near-miss typos automatically.
   const COMMON_DOMAINS = ["gmail.com", "googlemail.com", "yahoo.com",
-    "hotmail.com", "outlook.com", "live.com", "icloud.com"];
-  // Frequent typos mapped to the intended domain.
-  const DOMAIN_TYPOS = {
-    "gmial.com": "gmail.com", "gmai.com": "gmail.com", "gmal.com": "gmail.com",
-    "gmail.co": "gmail.com", "gmail.con": "gmail.com", "gmail.comm": "gmail.com",
-    "gmaill.com": "gmail.com", "gnail.com": "gmail.com", "gmail.cm": "gmail.com",
-    "gmailcom": "gmail.com", "hotmial.com": "hotmail.com",
-    "hotmai.com": "hotmail.com", "hotmail.co": "hotmail.com",
-    "yaho.com": "yahoo.com", "yahooo.com": "yahoo.com", "yahoo.co": "yahoo.com",
-    "outlok.com": "outlook.com", "outook.com": "outlook.com",
-    "icloud.co": "icloud.com"
-  };
+    "hotmail.com", "outlook.com", "live.com", "icloud.com", "aol.com",
+    "protonmail.com", "proton.me"];
+  // Real look-alike domains that must NEVER be "corrected" to a common one.
+  const KNOWN_VALID = new Set(COMMON_DOMAINS.concat([
+    "ymail.com", "email.com", "gmx.com", "rocketmail.com", "hotmail.co.uk",
+    "yahoo.co.uk", "me.com", "mac.com", "msn.com"]));
+
+  // Levenshtein edit distance — how many single-character edits apart two
+  // strings are. Used to spot a domain that's a tiny slip from a real one.
+  function editDistance(a, b) {
+    const m = a.length, n = b.length;
+    const dp = Array.from({length: m + 1}, function (_, i) {
+      return [i].concat(new Array(n).fill(0));
+    });
+    for (let j = 0; j <= n; j++) dp[0][j] = j;
+    for (let i = 1; i <= m; i++)
+      for (let j = 1; j <= n; j++)
+        dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1]
+          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    return dp[m][n];
+  }
+
+  // Return a suggested correct domain if `domain` is a likely typo, else null.
+  function suggestDomain(domain) {
+    if (KNOWN_VALID.has(domain)) return null;   // it's a real domain, leave it
+    let best = null, bestDist = 99;
+    COMMON_DOMAINS.forEach(function (good) {
+      const d = editDistance(domain, good);
+      if (d < bestDist) { bestDist = d; best = good; }
+    });
+    // 1–2 edits from a common domain = almost certainly a typo of it.
+    return (best && bestDist >= 1 && bestDist <= 2) ? best : null;
+  }
 
   function setState(input, msgEl, ok, message) {
     input.classList.toggle("field-invalid", ok === false);
@@ -200,9 +225,10 @@
       return false;
     }
     const domain = v.split("@")[1].toLowerCase();
-    if (DOMAIN_TYPOS[domain]) {
-      const fixed = v.replace(/@.*/, "@" + DOMAIN_TYPOS[domain]);
-      setState(emailEl, emailMsg, false, "Did you mean " + fixed + " ?");
+    const suggestion = suggestDomain(domain);
+    if (suggestion) {
+      const fixed = v.replace(/@.*/, "@" + suggestion);
+      setState(emailEl, emailMsg, false, "Did you mean " + fixed + " ? (click to fix)");
       emailMsg.dataset.suggest = fixed;
       return false;
     }
