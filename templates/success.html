@@ -76,6 +76,16 @@
       on Instagram for event updates and announcements.</p>
   </div>
 
+  <div class="card status-track-card">
+    <h3><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg> Track Your Registration</h3>
+    <p>You can check the live status of your registration (Pending, Accepted, or
+      Rejected) anytime on our website — just enter your Registration ID
+      <strong>WTR-{{ "%04d"|format(reg.id) }}</strong> on the status page.
+      You will <strong>also receive an email</strong> at {{ reg.email }} once your
+      payment is verified.</p>
+    <a href="{{ url_for('check_status', ref='WTR-%04d'|format(reg.id)) }}" class="btn">Check My Status</a>
+  </div>
+
   <div class="success-actions">
     <a href="{{ url_for('index') }}" class="btn btn-outline">Back to Home</a>
     <a href="{{ url_for('register') }}" class="btn">Register Another School</a>
