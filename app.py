@@ -335,9 +335,11 @@ def register():
             errors.append("School name is required.")
         if not focal_name:
             errors.append("Focal person's name is required.")
-        if not re.fullmatch(r"[0-9+\-\s()]{10,20}", phone or ""):
-            errors.append("Please enter a valid WhatsApp contact number.")
-        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email or ""):
+        phone_digits = re.sub(r"\D", "", phone)
+        if not re.fullmatch(r"(03\d{9}|923\d{9}|00923\d{9})", phone_digits):
+            errors.append("Please enter a valid mobile number, e.g. "
+                          "0300 1234567 or +92 300 1234567.")
+        if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}", email or ""):
             errors.append("Please enter a valid email address.")
         if len(txn_ref) < 4:
             errors.append("Please enter the Transaction ID / Reference Number "
