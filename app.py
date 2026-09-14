@@ -600,6 +600,45 @@ LGS Wapda Town
     return _send_via_smtp(reg["email"], subject, body)
 
 
+def send_rejection_email(reg):
+    """Send the registration-declined email. Returns (ok, error_message)."""
+    if not BREVO_API_KEY and not (SMTP_USER and SMTP_PASSWORD):
+        return False, ("email sending is not configured — set BREVO_API_KEY "
+                       "or SMTP_USER/SMTP_PASSWORD in the environment")
+    body = f"""Dear {reg['focal_name']},
+
+Thank you for registering {reg['school']} for ROBOTECH CHALLENGE 6.0.
+
+After reviewing your submission, we are sorry to inform you that your
+registration could NOT be accepted at this time.
+
+Registration ID : WTR-{reg['id']:04d}
+School          : {reg['school']}
+Transaction ref : {reg['txn_ref'] or 'N/A'}
+
+This usually happens when the payment could not be verified against our
+bank records, the transaction reference / screenshot did not match, or the
+required details were incomplete.
+
+Please do not worry — this may be fixable. Contact us to find out the exact
+reason and how to correct it:
+
+  {EVENT_INFO['contact_person']}
+  {EVENT_INFO['contact_info']}
+  Email: {EVENT_INFO['email']}
+
+If you believe this was a mistake, reply to this email with your payment
+proof and transaction reference number and we will review it again.
+
+Team ROBOTECH
+LGS Wapda Town
+"""
+    subject = f"Robotech 6.0 — Registration WTR-{reg['id']:04d} Not Accepted"
+    if BREVO_API_KEY:
+        return _send_via_brevo(reg["email"], subject, body)
+    return _send_via_smtp(reg["email"], subject, body)
+
+
 def deliver_confirmation(db, reg):
     """Send the confirmation email for a registration and stamp/flash the result."""
     teams = db.execute(
@@ -618,6 +657,17 @@ def deliver_confirmation(db, reg):
               "warn")
 
 
+def deliver_rejection(db, reg):
+    """Send the declined email and flash the result."""
+    ok, err = send_rejection_email(reg)
+    if ok:
+        flash(f"WTR-{reg['id']:04d} — declined; a notification email was sent "
+              f"to {reg['email']}.", "ok")
+    else:
+        flash(f"WTR-{reg['id']:04d} — declined, but the email was NOT sent: {err}",
+              "warn")
+
+
 @app.route("/admin/status/<int:reg_id>", methods=["POST"])
 def admin_set_status(reg_id):
     if not admin_logged_in():
@@ -629,6 +679,7 @@ def admin_set_status(reg_id):
                          (reg_id,)).fetchone()
         if reg is None:
             return redirect(url_for("admin"))
+        old_status = reg["status"]
         db.execute("UPDATE registrations SET status = ? WHERE id = ?",
                    (status, reg_id))
         db.commit()
@@ -643,6 +694,10 @@ def admin_set_status(reg_id):
                       f"needs another copy.", "ok")
             else:
                 deliver_confirmation(db, reg)
+        elif status == "rejected" and old_status != "rejected":
+            # Notify the school only on the transition into "rejected",
+            # so repeated clicks don't spam them.
+            deliver_rejection(db, reg)
     return redirect(url_for("admin"))
 
 
