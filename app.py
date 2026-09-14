@@ -51,6 +51,9 @@ def _env(name, default=""):
 ADMIN_PASSWORD = _env("ADMIN_PASSWORD", "change-me")
 app.secret_key = _env("SECRET_KEY", "dev-only-secret")
 
+# Public URL of the live site (used in emails for the status-check link).
+SITE_URL = _env("SITE_URL", "https://lgsrobotech.vercel.app").rstrip("/")
+
 # Email: Brevo HTTP API in production (BREVO_API_KEY), Gmail SMTP locally.
 BREVO_API_KEY = _env("BREVO_API_KEY")
 SENDER_EMAIL = _env("SENDER_EMAIL")
@@ -598,6 +601,12 @@ def send_confirmation_email(reg, teams, sent_at):
 Great news! Your payment has been verified and your registration for
 ROBOTECH CHALLENGE 6.0 is now CONFIRMED.
 
+Your Registration ID is WTR-{reg['id']:04d}.
+You can check the live status of your registration anytime on our website:
+  {SITE_URL}/status
+Just open that link and enter your Registration ID: WTR-{reg['id']:04d}
+
+------------------------------------------------------------
 Registration ID : WTR-{reg['id']:04d}
 School          : {reg['school']}
 Fee received    : Rs {reg['total_fee']:,}
@@ -646,6 +655,12 @@ Thank you for registering {reg['school']} for ROBOTECH CHALLENGE 6.0.
 After reviewing your submission, we are sorry to inform you that your
 registration could NOT be accepted at this time.
 
+Your Registration ID is WTR-{reg['id']:04d}.
+You can check the live status of your registration anytime on our website:
+  {SITE_URL}/status
+Just open that link and enter your Registration ID: WTR-{reg['id']:04d}
+
+------------------------------------------------------------
 Registration ID : WTR-{reg['id']:04d}
 School          : {reg['school']}
 Transaction ref : {reg['txn_ref'] or 'N/A'}
