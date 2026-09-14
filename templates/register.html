@@ -27,12 +27,16 @@
                  value="{{ form.get('focal_name', '') }}" placeholder="Full name">
         </label>
         <label>Contact Number (active on WhatsApp) *
-          <input type="tel" name="phone" required maxlength="20"
-                 value="{{ form.get('phone', '') }}" placeholder="03XX XXXXXXX">
+          <input type="tel" name="phone" id="phone" required maxlength="20"
+                 value="{{ form.get('phone', '') }}" placeholder="03XX XXXXXXX"
+                 autocomplete="tel">
+          <small class="field-msg" id="phone-msg"></small>
         </label>
         <label>Email of Focal Person *
-          <input type="email" name="email" required maxlength="120"
-                 value="{{ form.get('email', '') }}" placeholder="name@school.edu.pk">
+          <input type="email" name="email" id="email" required maxlength="120"
+                 value="{{ form.get('email', '') }}" placeholder="name@school.edu.pk"
+                 autocomplete="email">
+          <small class="field-msg" id="email-msg"></small>
         </label>
       </div>
     </fieldset>
@@ -156,6 +160,97 @@
 
   document.getElementById("add-team").addEventListener("click", addTeam);
   addTeam(); // start with one team row
+
+  // ---- Live email & phone validation -------------------------------------
+  const form = document.querySelector(".reg-form");
+  const emailEl = document.getElementById("email");
+  const emailMsg = document.getElementById("email-msg");
+  const phoneEl = document.getElementById("phone");
+  const phoneMsg = document.getElementById("phone-msg");
+
+  const COMMON_DOMAINS = ["gmail.com", "googlemail.com", "yahoo.com",
+    "hotmail.com", "outlook.com", "live.com", "icloud.com"];
+  // Frequent typos mapped to the intended domain.
+  const DOMAIN_TYPOS = {
+    "gmial.com": "gmail.com", "gmai.com": "gmail.com", "gmal.com": "gmail.com",
+    "gmail.co": "gmail.com", "gmail.con": "gmail.com", "gmail.comm": "gmail.com",
+    "gmaill.com": "gmail.com", "gnail.com": "gmail.com", "gmail.cm": "gmail.com",
+    "gmailcom": "gmail.com", "hotmial.com": "hotmail.com",
+    "hotmai.com": "hotmail.com", "hotmail.co": "hotmail.com",
+    "yaho.com": "yahoo.com", "yahooo.com": "yahoo.com", "yahoo.co": "yahoo.com",
+    "outlok.com": "outlook.com", "outook.com": "outlook.com",
+    "icloud.co": "icloud.com"
+  };
+
+  function setState(input, msgEl, ok, message) {
+    input.classList.toggle("field-invalid", ok === false);
+    input.classList.toggle("field-valid", ok === true);
+    msgEl.textContent = message || "";
+    msgEl.className = "field-msg" + (ok === false ? " msg-bad"
+                                     : ok === true ? " msg-good" : "");
+  }
+
+  function checkEmail(showEmpty) {
+    const v = emailEl.value.trim();
+    if (!v) { setState(emailEl, emailMsg, showEmpty ? false : null,
+                        showEmpty ? "Email is required." : ""); return !showEmpty ? true : false; }
+    // Format: something@something.tld (tld >= 2 letters)
+    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(v)) {
+      setState(emailEl, emailMsg, false, "That doesn't look like a valid email address.");
+      return false;
+    }
+    const domain = v.split("@")[1].toLowerCase();
+    if (DOMAIN_TYPOS[domain]) {
+      const fixed = v.replace(/@.*/, "@" + DOMAIN_TYPOS[domain]);
+      setState(emailEl, emailMsg, false, "Did you mean " + fixed + " ?");
+      emailMsg.dataset.suggest = fixed;
+      return false;
+    }
+    setState(emailEl, emailMsg, true, "Looks good ✓");
+    return true;
+  }
+
+  function checkPhone(showEmpty) {
+    const raw = phoneEl.value.trim();
+    if (!raw) { setState(phoneEl, phoneMsg, showEmpty ? false : null,
+                         showEmpty ? "Contact number is required." : ""); return false; }
+    const digits = raw.replace(/[^\d]/g, "");
+    // Pakistani mobile: 03XXXXXXXXX (11) or 92 3XXXXXXXXX (12) or 0092...(14)
+    let ok = false;
+    if (/^03\d{9}$/.test(digits)) ok = true;
+    else if (/^923\d{9}$/.test(digits)) ok = true;
+    else if (/^00923\d{9}$/.test(digits)) ok = true;
+    if (!ok) {
+      setState(phoneEl, phoneMsg, false,
+        "Enter a valid mobile number, e.g. 0300 1234567 or +92 300 1234567.");
+      return false;
+    }
+    setState(phoneEl, phoneMsg, true, "Looks good ✓");
+    return true;
+  }
+
+  emailEl.addEventListener("input", function () { checkEmail(false); });
+  emailEl.addEventListener("blur", function () { checkEmail(true); });
+  phoneEl.addEventListener("input", function () { checkPhone(false); });
+  phoneEl.addEventListener("blur", function () { checkPhone(true); });
+
+  // Click the "did you mean" suggestion to accept it.
+  emailMsg.addEventListener("click", function () {
+    if (emailMsg.dataset.suggest) {
+      emailEl.value = emailMsg.dataset.suggest;
+      emailMsg.dataset.suggest = "";
+      checkEmail(true);
+    }
+  });
+
+  form.addEventListener("submit", function (e) {
+    const okEmail = checkEmail(true);
+    const okPhone = checkPhone(true);
+    if (!okEmail || !okPhone) {
+      e.preventDefault();
+      (okPhone ? emailEl : phoneEl).focus();
+    }
+  });
 })();
 </script>
 
