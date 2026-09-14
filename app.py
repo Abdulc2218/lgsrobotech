@@ -438,6 +438,34 @@ def success(reg_id):
                            info=EVENT_INFO)
 
 
+@app.route("/status")
+def check_status():
+    """Public status checker — a school enters its WTR-#### id and sees whether
+    the registration is pending, accepted, or rejected."""
+    raw = request.args.get("ref", "").strip()
+    if not raw:
+        return render_template("check_status.html", info=EVENT_INFO)
+
+    # Accept "WTR-0001", "wtr 1", "0001", or "1".
+    digits = re.sub(r"\D", "", raw)
+    reg = None
+    if digits:
+        db = get_db()
+        reg = db.execute("SELECT * FROM registrations WHERE id = ?",
+                         (int(digits),)).fetchone()
+    if reg is None:
+        return render_template(
+            "check_status.html", info=EVENT_INFO, query=raw,
+            not_found=True)
+
+    teams = get_db().execute(
+        "SELECT * FROM teams WHERE registration_id = ? ORDER BY id",
+        (reg["id"],)).fetchall()
+    return render_template("check_status.html", info=EVENT_INFO, query=raw,
+                           reg=reg, teams=teams, challenges=CHALLENGES,
+                           categories=CATEGORIES)
+
+
 @app.route("/receipt/<int:reg_id>")
 def receipt(reg_id):
     db = get_db()
