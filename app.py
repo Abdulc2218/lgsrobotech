@@ -41,20 +41,26 @@ _load_local_secrets()
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = MAX_RECEIPT_MB * 1024 * 1024
 
+def _env(name, default=""):
+    """Read an env var and strip stray whitespace/newlines — a trailing newline
+    pasted into a hosting dashboard would otherwise break HTTP headers, etc."""
+    return os.environ.get(name, default).strip()
+
+
 # All secrets come from environment variables — never commit them to git.
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "change-me")
-app.secret_key = os.environ.get("SECRET_KEY", "dev-only-secret")
+ADMIN_PASSWORD = _env("ADMIN_PASSWORD", "change-me")
+app.secret_key = _env("SECRET_KEY", "dev-only-secret")
 
 # Email: Brevo HTTP API in production (BREVO_API_KEY), Gmail SMTP locally.
-BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
-SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "")
-SMTP_HOST = os.environ.get("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.environ.get("SMTP_PORT", "587"))
-SMTP_USER = os.environ.get("SMTP_USER", "")
-SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD", "")
+BREVO_API_KEY = _env("BREVO_API_KEY")
+SENDER_EMAIL = _env("SENDER_EMAIL")
+SMTP_HOST = _env("SMTP_HOST", "smtp.gmail.com")
+SMTP_PORT = int(_env("SMTP_PORT", "587") or "587")
+SMTP_USER = _env("SMTP_USER")
+SMTP_PASSWORD = _env("SMTP_PASSWORD")
 
 # Database: Postgres when DATABASE_URL is set (Render + Neon), else SQLite.
-DATABASE_URL = os.environ.get("DATABASE_URL", "")
+DATABASE_URL = _env("DATABASE_URL")
 IS_POSTGRES = bool(DATABASE_URL)
 if IS_POSTGRES:
     import psycopg
