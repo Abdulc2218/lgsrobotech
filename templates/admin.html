@@ -114,7 +114,7 @@
           {% endif %}
           {% if reg.status != "rejected" %}
           <button class="btn btn-small btn-reject" name="status" value="rejected"
-                  onclick='return confirm({{ ("Are you sure you want to REJECT registration WTR-%04d — %s?"|format(reg.id, reg.school))|tojson }})'>
+                  onclick='return confirm({{ ("Are you sure you want to REJECT registration WTR-%04d — %s?\n\nAn email will be sent to %s telling them it was not accepted and to contact you."|format(reg.id, reg.school, reg.email))|tojson }})'>
             <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg> Reject</button>
           {% endif %}
           {% if reg.status != "pending" %}
