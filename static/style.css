@@ -230,6 +230,7 @@ input.field-valid { border-color: var(--green); }
 .teams-table thead th { color: var(--purple-bright); }
 .teams-table tfoot th { color: var(--green); font-size: 1.05rem; }
 .payment-card { margin-top: 1.4rem; border-color: var(--green); }
+.status-track-card { margin-top: 1.4rem; border-color: var(--purple); }
 .payment-fieldset { border-color: var(--green) !important; margin-top: 0.4rem; }
 .read-these {
   font-family: "Orbitron", sans-serif; font-weight: 800;
@@ -301,6 +302,11 @@ input[type="file"]::file-selector-button {
 .login-btn { margin-top: 0.4rem; }
 
 /* ===== Status checker ===== */
+.status-notice { display: flex; align-items: flex-start; gap: 0.5rem;
+  background: rgba(255, 200, 60, 0.1); border: 1px solid #ffc83c;
+  color: #ffc83c; border-radius: var(--radius); padding: 0.8rem 1.1rem;
+  font-weight: 600; margin-bottom: 1rem; }
+.status-notice .icon { flex-shrink: 0; margin-top: 0.15rem; }
 .status-check-form { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1.4rem; }
 .status-check-form label { flex: 1; min-width: 220px; }
 .status-result { text-align: center; }
