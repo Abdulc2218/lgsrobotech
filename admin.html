@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Organizer Dashboard — Robotech Challenge 6.0{% endblock %}
+{% block content %}
+
+<section class="section admin-section">
+  <div class="admin-head">
+    <h2>Organizer <span class="accent">Dashboard</span></h2>
+    <div class="admin-actions">
+      <a href="{{ url_for('admin_export') }}" class="btn btn-small"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Export CSV</a>
+      <a href="{{ url_for('admin_logout') }}" class="btn btn-small btn-outline">Log Out</a>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+    <div class="flash flash-{{ cat }}">
+      <svg class="icon" aria-hidden="true"><use href="#i-{{ 'check-circle' if cat == 'ok' else 'alert-triangle' }}"/></svg>
+      {{ msg }}
+    </div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="cards-4 stat-row">
+    <div class="card stat-card">
+      <span class="stat-num">{{ stats.registrations }}</span>
+      <span class="stat-label">Registrations</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-num">{{ stats.teams }}</span>
+      <span class="stat-label">Teams</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-num">Rs {{ "{:,}".format(stats.fees_verified) }}</span>
+      <span class="stat-label">Fees Verified<br>(of Rs {{ "{:,}".format(stats.fees_total) }} total)</span>
+    </div>
+    <div class="card stat-card">
+      <span class="stat-num">{{ stats.pending }}</span>
+      <span class="stat-label">Awaiting Verification</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Teams per Challenge</h3>
+    <div class="challenge-count-grid">
+      {% for key, ch in challenges.items() %}
+      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-{{ ch.icon }}"/></svg> {{ ch.name }}: <strong>{{ challenge_counts[key] }}</strong></span>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% if not regs %}
+  <div class="card empty-card"><p>No registrations yet.</p></div>
+  {% endif %}
+
+  {% for reg in regs %}
+  <div class="card reg-card status-{{ reg.status }}">
+    <div class="reg-card-head">
+      <h3>WTR-{{ "%04d"|format(reg.id) }} — {{ reg.school }}</h3>
+      <span class="badge badge-{{ reg.status }}">
+        {% if reg.status == "verified" %}<svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Payment Verified
+        {% elif reg.status == "rejected" %}<svg class="icon" aria-hidden="true"><use href="#i-x"/></svg> Rejected
+        {% else %}<svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg> Pending Verification{% endif %}
+      </span>
+    </div>
+
+    <div class="reg-grid">
+      <div>
+        <table class="summary-table">
+          <tr><th>Focal Person</th><td>{{ reg.focal_name }}</td></tr>
+          <tr><th>WhatsApp</th><td>{{ reg.phone }}</td></tr>
+          <tr><th>Email</th><td><a href="mailto:{{ reg.email }}">{{ reg.email }}</a></td></tr>
+          <tr><th>Submitted</th><td>{{ reg.created_at.replace("T", " at ") }}</td></tr>
+          <tr><th>Total Fee</th><td class="fee">Rs {{ "{:,}".format(reg.total_fee) }}</td></tr>
+          <tr><th>Transaction Ref</th><td><span class="txn-ref">{{ reg.txn_ref or "— not provided —" }}</span></td></tr>
+        </table>
+
+        <div class="table-wrap">
+          <table class="teams-table">
+            <thead><tr><th>#</th><th>Challenge</th><th>Category</th><th>Participants</th><th>Fee</th></tr></thead>
+            <tbody>
+              {% for t in teams_by_reg.get(reg.id, []) %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td><svg class="icon" aria-hidden="true"><use href="#i-{{ challenges[t.challenge].icon }}"/></svg> {{ challenges[t.challenge].name }}</td>
+                <td>{{ categories[t.category] }}</td>
+                <td>{{ t.member1 }}{% if t.member2 %}, {{ t.member2 }}{% endif %}</td>
+                <td>Rs {{ "{:,}".format(t.fee) }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="receipt-col">
+        <h4>Payment Receipt</h4>
+        {% if reg.receipt_file %}
+          {% if reg.receipt_file.lower().endswith(".pdf") %}
+          <a href="{{ url_for('receipt', reg_id=reg.id) }}" target="_blank" class="btn btn-small">Open PDF Receipt</a>
+          {% else %}
+          <a href="{{ url_for('receipt', reg_id=reg.id) }}" target="_blank" title="Click to open full size">
+            <img class="receipt-thumb" src="{{ url_for('receipt', reg_id=reg.id) }}" alt="Payment receipt">
+          </a>
+          {% endif %}
+        {% else %}
+          <p class="missing-receipt"><svg class="icon" aria-hidden="true"><use href="#i-alert-triangle"/></svg> No receipt uploaded</p>
+        {% endif %}
+
+        <form method="post" action="{{ url_for('admin_set_status', reg_id=reg.id) }}" class="status-form">
+          {% if reg.status != "verified" %}
+          <button class="btn btn-small btn-verify" name="status" value="verified"
+                  onclick='return confirm({{ ("Are you sure you want to VERIFY the payment for WTR-%04d — %s?\n\nA confirmation email will be sent to %s."|format(reg.id, reg.school, reg.email))|tojson }})'>
+            <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Verify Payment</button>
+          {% endif %}
+          {% if reg.status != "rejected" %}
+          <button class="btn btn-small btn-reject" name="status" value="rejected"
+                  onclick='return confirm({{ ("Are you sure you want to REJECT registration WTR-%04d — %s?"|format(reg.id, reg.school))|tojson }})'>
+            <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg> Reject</button>
+          {% endif %}
+          {% if reg.status != "pending" %}
+          <button class="btn btn-small btn-outline" name="status" value="pending">
+            <svg class="icon" aria-hidden="true"><use href="#i-rotate-ccw"/></svg> Reset to Pending</button>
+          {% endif %}
+        </form>
+        {% if reg.confirm_email_sent %}
+        <p class="email-sent"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+          Confirmation email sent {{ reg.confirm_email_sent.replace("T", " at ") }}</p>
+        {% endif %}
+        {% if reg.status == "verified" %}
+        <form method="post" action="{{ url_for('admin_resend_email', reg_id=reg.id) }}" class="status-form">
+          <button class="btn btn-small btn-outline"
+                  onclick='return confirm({{ ("Resend the confirmation email for WTR-%04d — %s to %s?"|format(reg.id, reg.school, reg.email))|tojson }})'>
+            <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg> Resend Email</button>
+        </form>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</section>
+
+{% endblock %}

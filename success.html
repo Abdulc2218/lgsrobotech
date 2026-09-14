@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Registration Received — Robotech Challenge 6.0{% endblock %}
+{% block content %}
+
+<section class="section form-section">
+  <div class="success-head">
+    <div class="success-icon"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg></div>
+    <h2>Registration <span class="green">Received!</span></h2>
+    <p class="section-sub">Your registration ID is
+      <strong class="reg-id">WTR-{{ "%04d"|format(reg.id) }}</strong> — please quote it in
+      all correspondence.</p>
+  </div>
+
+  <div class="card">
+    <h3>Registration Summary</h3>
+    <table class="summary-table">
+      <tr><th>School</th><td>{{ reg.school }}</td></tr>
+      <tr><th>Focal Person</th><td>{{ reg.focal_name }}</td></tr>
+      <tr><th>Contact</th><td>{{ reg.phone }}</td></tr>
+      <tr><th>Email</th><td>{{ reg.email }}</td></tr>
+      <tr><th>Transaction Ref</th><td>{{ reg.txn_ref or "—" }}</td></tr>
+      <tr><th>Submitted</th><td>{{ reg.created_at.replace("T", " at ") }}</td></tr>
+    </table>
+
+    <h3 class="mt">Teams</h3>
+    <div class="table-wrap">
+      <table class="teams-table">
+        <thead>
+          <tr><th>#</th><th>Challenge</th><th>Category</th><th>Participants</th><th>Fee</th></tr>
+        </thead>
+        <tbody>
+          {% for t in teams %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ challenges[t.challenge].name }}</td>
+            <td>{{ categories[t.category] }}</td>
+            <td>{{ t.member1 }}{% if t.member2 %}, {{ t.member2 }}{% endif %}</td>
+            <td>Rs {{ "{:,}".format(t.fee) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr><th colspan="4">Total</th><th>Rs {{ "{:,}".format(reg.total_fee) }}</th></tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+
+  <div class="card payment-card">
+    {% if reg.receipt_file %}
+    <h3><svg class="icon" aria-hidden="true"><use href="#i-credit-card"/></svg> Payment Proof Received</h3>
+    <p>Your transaction screenshot has been uploaded and attached to registration
+      <strong>WTR-{{ "%04d"|format(reg.id) }}</strong>. The organizing team will verify
+      the payment of <strong>Rs {{ "{:,}".format(reg.total_fee) }}</strong> and confirm
+      your registration via WhatsApp or email.</p>
+    {% if reg.receipt_file.lower().endswith(".pdf") %}
+    <p><a href="{{ url_for('receipt', reg_id=reg.id) }}" target="_blank">View uploaded receipt (PDF)</a></p>
+    {% else %}
+    <img class="receipt-preview" src="{{ url_for('receipt', reg_id=reg.id) }}"
+         alt="Uploaded transaction screenshot">
+    {% endif %}
+    {% else %}
+    <h3><svg class="icon" aria-hidden="true"><use href="#i-credit-card"/></svg> Next Step: Payment</h3>
+    <p>To confirm your registration, transfer the total fee of
+      <strong>Rs {{ "{:,}".format(reg.total_fee) }}</strong> to:</p>
+    <p class="bank-box">{{ info.bank }}</p>
+    <p>Then email your payment receipt (with registration ID
+      <strong>WTR-{{ "%04d"|format(reg.id) }}</strong>) to
+      <a href="mailto:{{ info.email }}">{{ info.email }}</a>
+      before <strong>{{ info.deadline }}</strong>.</p>
+    {% endif %}
+    <p>Questions? Contact {{ info.contact_person }} or {{ info.contact_info }}.</p>
+    <p class="follow-line">Follow
+      <a href="https://instagram.com/{{ info.instagram }}" target="_blank" rel="noopener" class="social-link">
+        <svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg> @{{ info.instagram }}</a>
+      on Instagram for event updates and announcements.</p>
+  </div>
+
+  <div class="success-actions">
+    <a href="{{ url_for('index') }}" class="btn btn-outline">Back to Home</a>
+    <a href="{{ url_for('register') }}" class="btn">Register Another School</a>
+  </div>
+</section>
+
+{% endblock %}

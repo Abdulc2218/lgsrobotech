@@ -241,6 +241,7 @@ SCHEMA_SQLITE = """
         phone       TEXT NOT NULL,
         email       TEXT NOT NULL,
         total_fee   INTEGER NOT NULL,
+        txn_ref     TEXT,
         receipt_file TEXT,
         receipt_mime TEXT,
         receipt_data BLOB,
@@ -267,6 +268,7 @@ SCHEMA_POSTGRES = """
         phone       TEXT NOT NULL,
         email       TEXT NOT NULL,
         total_fee   INTEGER NOT NULL,
+        txn_ref     TEXT,
         receipt_file TEXT,
         receipt_mime TEXT,
         receipt_data BYTEA,
@@ -290,13 +292,16 @@ def init_db():
     if IS_POSTGRES:
         with psycopg.connect(DATABASE_URL) as conn:
             conn.execute(SCHEMA_POSTGRES)
+            # Migrate cloud databases created before newer columns existed.
+            conn.execute("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS txn_ref TEXT")
             conn.commit()
         return
     with sqlite3.connect(DB_PATH) as db:
         db.executescript(SCHEMA_SQLITE)
         # Migrate local databases created before newer features.
         cols = {row[1] for row in db.execute("PRAGMA table_info(registrations)")}
-        for col, decl in [("receipt_file", "TEXT"), ("receipt_mime", "TEXT"),
+        for col, decl in [("txn_ref", "TEXT"),
+                          ("receipt_file", "TEXT"), ("receipt_mime", "TEXT"),
                           ("receipt_data", "BLOB"),
                           ("status", "TEXT NOT NULL DEFAULT 'pending'"),
                           ("confirm_email_sent", "TEXT")]:
@@ -324,6 +329,7 @@ def register():
         focal_name = form.get("focal_name", "").strip()
         phone = form.get("phone", "").strip()
         email = form.get("email", "").strip()
+        txn_ref = form.get("txn_ref", "").strip()
 
         if not school:
             errors.append("School name is required.")
@@ -333,6 +339,9 @@ def register():
             errors.append("Please enter a valid WhatsApp contact number.")
         if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", email or ""):
             errors.append("Please enter a valid email address.")
+        if len(txn_ref) < 4:
+            errors.append("Please enter the Transaction ID / Reference Number "
+                          "from your bank transfer (found on the receipt).")
 
         challenges = form.getlist("challenge[]")
         categories = form.getlist("category[]")
@@ -375,9 +384,10 @@ def register():
             receipt_bytes = receipt.read()
             db = get_db()
             insert_sql = (
-                "INSERT INTO registrations (school, focal_name, phone, email, total_fee, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?)")
-            params = (school, focal_name, phone, email, total,
+                "INSERT INTO registrations (school, focal_name, phone, email, "
+                "total_fee, txn_ref, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)")
+            params = (school, focal_name, phone, email, total, txn_ref,
                       datetime.now().isoformat(timespec="seconds"))
             if IS_POSTGRES:
                 reg_id = db.execute(insert_sql + " RETURNING id",
@@ -555,6 +565,7 @@ ROBOTECH CHALLENGE 6.0 is now CONFIRMED.
 Registration ID : WTR-{reg['id']:04d}
 School          : {reg['school']}
 Fee received    : Rs {reg['total_fee']:,}
+Transaction ref : {reg['txn_ref'] or 'N/A'}
 Confirmed on    : {sent_at.replace("T", " at ")}
 
 Registered teams:
@@ -657,7 +668,8 @@ def admin_export():
     writer = csv.writer(buf)
     writer.writerow(["Registration ID", "School", "Focal Person", "Phone", "Email",
                      "Challenge", "Category", "Participant 1", "Participant 2",
-                     "Team Fee", "Payment Status", "Receipt File", "Submitted"])
+                     "Team Fee", "Transaction Ref", "Payment Status",
+                     "Receipt File", "Submitted"])
     rows = db.execute(
         "SELECT r.*, t.challenge, t.category, t.member1, t.member2, t.fee AS team_fee "
         "FROM registrations r JOIN teams t ON t.registration_id = r.id "
@@ -667,8 +679,8 @@ def admin_export():
             f"WTR-{row['id']:04d}", row["school"], row["focal_name"], row["phone"],
             row["email"], CHALLENGES[row["challenge"]]["name"],
             CATEGORIES[row["category"]], row["member1"], row["member2"] or "",
-            row["team_fee"], row["status"], row["receipt_file"] or "MISSING",
-            row["created_at"],
+            row["team_fee"], row["txn_ref"] or "", row["status"],
+            row["receipt_file"] or "MISSING", row["created_at"],
         ])
     return Response(
         "\ufeff" + buf.getvalue(), mimetype="text/csv",
