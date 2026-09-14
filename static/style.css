@@ -256,6 +256,9 @@ input[type="file"]::file-selector-button {
 .flash-ok { background: rgba(126, 211, 33, 0.1); border: 1px solid var(--green); color: var(--green); }
 .flash-warn { background: rgba(255, 200, 60, 0.1); border: 1px solid #ffc83c; color: #ffc83c; }
 .email-sent { color: var(--green); font-size: 0.9rem; margin-top: 0.6rem; }
+.txn-ref { font-family: "Orbitron", monospace; letter-spacing: 0.05em;
+           color: var(--purple-bright); background: var(--bg-2);
+           padding: 0.1rem 0.5rem; border-radius: 5px; }
 .stat-card { text-align: center; }
 .stat-num { display: block; font-family: "Orbitron", sans-serif; font-size: 1.6rem; color: var(--purple-bright); font-weight: 800; }
 .stat-label { color: var(--text-dim); font-size: 0.9rem; }
