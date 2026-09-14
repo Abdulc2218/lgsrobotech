@@ -48,8 +48,23 @@
     </div>
   </div>
 
+  <form method="get" action="{{ url_for('admin') }}" class="admin-search card">
+    <input type="search" name="q" value="{{ q or '' }}"
+           placeholder="Search by WTR-ID, school, focal person, email, phone, or transaction ref…"
+           autofocus>
+    <button type="submit" class="btn btn-small">Search</button>
+    {% if q %}<a href="{{ url_for('admin') }}" class="btn btn-small btn-outline">Clear</a>{% endif %}
+  </form>
+
+  {% if q %}
+  <p class="search-summary">Showing <strong>{{ regs|length }}</strong> result{{ '' if regs|length == 1 else 's' }}
+    for “{{ q }}” (of {{ total }} total). <a href="{{ url_for('admin') }}">Show all</a></p>
+  {% endif %}
+
   {% if not regs %}
-  <div class="card empty-card"><p>No registrations yet.</p></div>
+  <div class="card empty-card">
+    <p>{% if q %}No registrations match “{{ q }}”.{% else %}No registrations yet.{% endif %}</p>
+  </div>
   {% endif %}
 
   {% for reg in regs %}
