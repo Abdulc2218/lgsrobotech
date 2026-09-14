@@ -183,6 +183,12 @@ input, select {
   padding: 0.65rem 0.8rem; font-family: inherit; font-size: 1rem;
 }
 input:focus, select:focus { outline: 2px solid var(--purple); border-color: var(--purple); }
+input.field-invalid { border-color: var(--danger); }
+input.field-invalid:focus { outline-color: var(--danger); }
+input.field-valid { border-color: var(--green); }
+.field-msg { font-size: 0.85rem; font-weight: 600; min-height: 1em; }
+.field-msg.msg-bad { color: var(--danger); cursor: pointer; }
+.field-msg.msg-good { color: var(--green); }
 .hint { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1rem; }
 
 .team-row { margin-bottom: 1rem; background: var(--bg-2); }
