@@ -265,6 +265,10 @@ input[type="file"]::file-selector-button {
 .admin-head h2 { margin-bottom: 0; }
 .admin-actions { display: flex; gap: 0.7rem; }
 .stat-row { margin-bottom: 1.2rem; }
+.admin-search { display: flex; gap: 0.6rem; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; }
+.admin-search input { flex: 1; min-width: 220px; }
+.search-summary { color: var(--text-dim); margin-bottom: 1rem; }
+.search-summary strong { color: var(--purple-bright); }
 .flash { border-radius: var(--radius); padding: 0.9rem 1.3rem; margin-bottom: 1.2rem;
          font-weight: 600; display: flex; align-items: center; gap: 0.6rem; }
 .flash-ok { background: rgba(126, 211, 33, 0.1); border: 1px solid var(--green); color: var(--green); }
