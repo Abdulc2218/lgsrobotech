@@ -18,6 +18,7 @@
       <tr><th>Focal Person</th><td>{{ reg.focal_name }}</td></tr>
       <tr><th>Contact</th><td>{{ reg.phone }}</td></tr>
       <tr><th>Email</th><td>{{ reg.email }}</td></tr>
+      <tr><th>Transaction Ref</th><td>{{ reg.txn_ref or "—" }}</td></tr>
       <tr><th>Submitted</th><td>{{ reg.created_at.replace("T", " at ") }}</td></tr>
     </table>
 

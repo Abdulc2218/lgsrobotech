@@ -71,6 +71,7 @@
           <tr><th>Email</th><td><a href="mailto:{{ reg.email }}">{{ reg.email }}</a></td></tr>
           <tr><th>Submitted</th><td>{{ reg.created_at.replace("T", " at ") }}</td></tr>
           <tr><th>Total Fee</th><td class="fee">Rs {{ "{:,}".format(reg.total_fee) }}</td></tr>
+          <tr><th>Transaction Ref</th><td><span class="txn-ref">{{ reg.txn_ref or "— not provided —" }}</span></td></tr>
         </table>
 
         <div class="table-wrap">

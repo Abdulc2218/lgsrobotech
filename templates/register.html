@@ -57,13 +57,23 @@
           <p class="bank-box">{{ info.bank }}</p>
         </li>
         <li>Take a screenshot (or photo) of the transaction receipt.</li>
-        <li>Upload it below — <strong>registration is only complete with proof of payment</strong>.</li>
+        <li>Enter the <strong>Transaction ID / Reference Number</strong> and upload
+          the screenshot below — <strong>registration is only complete with proof of payment</strong>.</li>
       </ol>
-      <label class="file-label">Transaction Screenshot *
-        <input type="file" name="receipt" required
-               accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf">
-      </label>
-      <p class="hint">Accepted: PNG, JPG, WEBP or PDF — max 4 MB.</p>
+      <div class="field-grid">
+        <label>Transaction ID / Reference Number *
+          <input type="text" name="txn_ref" required maxlength="60"
+                 value="{{ form.get('txn_ref', '') }}"
+                 placeholder="e.g. IBFT / TID from your receipt">
+        </label>
+        <label class="file-label">Transaction Screenshot *
+          <input type="file" name="receipt" required
+                 accept=".png,.jpg,.jpeg,.webp,.pdf,image/png,image/jpeg,image/webp,application/pdf">
+        </label>
+      </div>
+      <p class="hint">The reference number appears on your Askari Bank transfer /
+        IBFT receipt — we verify it against our bank statement before confirming.
+        Screenshot: PNG, JPG, WEBP or PDF — max 4 MB.</p>
     </fieldset>
 
     <button type="submit" class="btn btn-lg">Complete Registration</button>
