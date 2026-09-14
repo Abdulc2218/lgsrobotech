@@ -519,7 +519,7 @@ def admin():
     if not admin_logged_in():
         return redirect(url_for("admin_login"))
     db = get_db()
-    regs = db.execute("SELECT * FROM registrations ORDER BY id DESC").fetchall()
+    all_regs = db.execute("SELECT * FROM registrations ORDER BY id DESC").fetchall()
     teams_by_reg = {}
     for t in db.execute("SELECT * FROM teams ORDER BY id").fetchall():
         teams_by_reg.setdefault(t["registration_id"], []).append(t)
@@ -529,17 +529,37 @@ def admin():
             "SELECT challenge, COUNT(*) AS n FROM teams GROUP BY challenge"):
         challenge_counts[row["challenge"]] = row["n"]
 
+    # Stats always reflect ALL registrations, not the filtered view.
     stats = {
-        "registrations": len(regs),
+        "registrations": len(all_regs),
         "teams": sum(len(v) for v in teams_by_reg.values()),
-        "fees_total": sum(r["total_fee"] for r in regs),
-        "fees_verified": sum(r["total_fee"] for r in regs if r["status"] == "verified"),
-        "pending": sum(1 for r in regs if r["status"] == "pending"),
+        "fees_total": sum(r["total_fee"] for r in all_regs),
+        "fees_verified": sum(r["total_fee"] for r in all_regs if r["status"] == "verified"),
+        "pending": sum(1 for r in all_regs if r["status"] == "pending"),
     }
+
+    # Optional search. A pure-number or "WTR-####" query is treated as an exact
+    # registration-ID lookup; anything else is a case-insensitive substring
+    # match across school / focal person / email / phone / transaction ref.
+    q = request.args.get("q", "").strip()
+    if q:
+        id_match = re.fullmatch(r"(?i)\s*(?:wtr[-\s]?)?0*(\d+)\s*", q)
+        if id_match:
+            rid = int(id_match.group(1))
+            regs = [r for r in all_regs if r["id"] == rid]
+        else:
+            ql = q.lower()
+            regs = [r for r in all_regs if ql in " ".join(
+                str(x or "").lower() for x in (
+                    r["school"], r["focal_name"], r["email"],
+                    r["phone"], r["txn_ref"]))]
+    else:
+        regs = all_regs
+
     return render_template("admin.html", regs=regs, teams_by_reg=teams_by_reg,
                            stats=stats, challenge_counts=challenge_counts,
                            challenges=CHALLENGES, categories=CATEGORIES,
-                           info=EVENT_INFO)
+                           info=EVENT_INFO, q=q, total=len(all_regs))
 
 
 def _send_via_smtp(to_addr, subject, body):
