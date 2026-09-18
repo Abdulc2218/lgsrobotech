@@ -191,6 +191,25 @@ input.field-valid { border-color: var(--green); }
 .field-msg.msg-good { color: var(--green); }
 .hint { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1rem; }
 
+/* ===== Sport-centric registration blocks ===== */
+.sport-block { margin-bottom: 1.2rem; background: var(--bg-2); }
+.sport-block-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 0.8rem; margin-bottom: 0.4rem; }
+.sport-select-label { flex: 1; }
+.sport-hint { color: var(--green); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.8rem; min-height: 1em; }
+.remove-sport, .remove-player {
+  background: transparent; border: 1px solid var(--card-border); color: var(--danger);
+  border-radius: 6px; width: 2.1rem; height: 2.1rem; cursor: pointer; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.remove-sport:hover, .remove-player:hover { background: rgba(255, 107, 129, 0.12); }
+.player-row { display: flex; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.7rem;
+  padding-bottom: 0.7rem; border-bottom: 1px dashed var(--card-border); }
+.player-row:last-of-type { border-bottom: none; }
+.player-grid { flex: 1; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.add-player { margin-top: 0.2rem; }
+.status-sport { font-family: "Orbitron", sans-serif; color: var(--purple-bright);
+  font-size: 0.95rem; margin: 1rem 0 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
+
 .team-row { margin-bottom: 1rem; background: var(--bg-2); }
 .team-row-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
 .team-label { color: var(--purple-bright); font-family: "Orbitron", sans-serif; }
