@@ -20,29 +20,32 @@
 html { background: var(--bg); }
 
 body {
-  background:
-    radial-gradient(ellipse 80% 60% at 15% -10%, rgba(42, 168, 242, 0.18), transparent 60%),
-    radial-gradient(ellipse 70% 60% at 100% 0%, rgba(255, 138, 61, 0.14), transparent 55%),
-    radial-gradient(ellipse 90% 70% at 50% 120%, rgba(56, 217, 121, 0.10), transparent 60%),
-    var(--bg);
-  background-attachment: fixed;
+  background: transparent;
   color: var(--text);
   font-family: "Rajdhani", "Segoe UI", system-ui, sans-serif;
   font-size: 1.05rem;
   line-height: 1.6;
 }
 
-/* Subtle diagonal "speed stripes" behind everything for sporty energy. */
+/* ===== Dithered wave background (WebGL) ===== */
+#dither-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  display: block;
+  pointer-events: none;
+}
+
+/* Readability scrim over the animated background. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: repeating-linear-gradient(
-    -45deg,
-    rgba(255, 255, 255, 0.022) 0 2px,
-    transparent 2px 22px);
+  background: linear-gradient(180deg, rgba(10, 26, 47, 0.32), rgba(10, 26, 47, 0.58));
 }
 
 h1, h2, h3, .nav-brand, .total, .reg-id {
