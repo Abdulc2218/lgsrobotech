@@ -70,125 +70,113 @@ if IS_POSTGRES:
     from psycopg.rows import dict_row
 
 # ---------------------------------------------------------------------------
-# Event data (from the official Robotech 6.0 invitation)
+# Event data (from the official LGS WT Sports Fest 2026 invitation)
 # ---------------------------------------------------------------------------
 
-CHALLENGES = {
-    "game-dev": {
-        "name": "Game Development Challenge",
-        "fee": 3000,
-        "icon": "gamepad",
-        "desc": "Design and develop an original playable digital game combining "
-                "programming, storytelling, graphics and problem-solving.",
-        "specs": ["Original game by the team", "Presented within competition requirements"],
-    },
-    "robo-war": {
-        "name": "Robo War",
-        "fee": 3500,
-        "icon": "bot",
-        "desc": "Build a custom remote-controlled fighting robot and battle to disable, "
-                "push out, or outlast opponents in an enclosed arena.",
-        "specs": ["Optimus Prime: max 8 kg, 10×10×10 in", "Jet Fire: max 5 kg, 8×8×8 in",
-                  "Store-bought devices disqualified", "No sharp blades, flames or explosives"],
-    },
-    "goal-bot": {
-        "name": "Goal-bot Challenge (Robot Soccer)",
-        "fee": 3500,
-        "icon": "ball",
-        "desc": "Design a robot that chases a ball and scores goals against opponents "
-                "on a marked field in timed rounds.",
-        "specs": ["Max 2.5–3 kg, 30×30×25 cm", "Simple front scoop/pusher",
-                  "Wireless remote control"],
-    },
-    "bot-prix": {
-        "name": "Bot Prix",
-        "fee": 3000,
-        "icon": "flag",
-        "desc": "A high-speed robotics race — complete the designated track in the "
-                "shortest possible time.",
-        "specs": ["Max 2.5–3 kg, 30×30×25 cm", "6V–12V battery, DC geared motors",
-                  "IR/ultrasonic sensors allowed"],
-    },
-    "tin-can-titan": {
-        "name": "Tin Can Titan — Exhibition of IoT",
-        "fee": 3000,
-        "icon": "radio",
-        "desc": "Showcase a working IoT device built from recycled materials. "
-                "Theme: “Recycle to Upcycle — Smart Solutions from Waste”.",
-        "specs": ["Working IoT concept or prototype", "Body/structure from recycled materials",
-                  "Be ready to explain working & innovation"],
-    },
-    "app-dev": {
-        "name": "App Development Challenge",
-        "fee": 3000,
-        "icon": "smartphone",
-        "desc": "Design and develop a useful, innovative application that addresses "
-                "a real-world need.",
-        "specs": ["Original work by the team", "Present the working app and its features",
-                  "Bring your own laptop, software & internet"],
-    },
-    "100-code": {
-        "name": "100 Minutes of Code",
-        "fee": 3000,
-        "icon": "timer",
-        "desc": "A fast-paced programming sprint — solve coding problems within 100 minutes. "
-                "Languages: Python and C.",
-        "specs": ["Optimus Prime: moderate–advanced problems",
-                  "Jet Fire: beginner-friendly (loops, conditionals)",
-                  "Bring your own laptop & internet"],
-    },
-    "ai-entrepreneurship": {
-        "name": "AI-Powered Entrepreneurship",
-        "fee": 3000,
-        "icon": "lightbulb",
-        "desc": "Pitch an innovative business idea that turns recycled materials into "
-                "something valuable, with AI meaningfully involved.",
-        "specs": ["5-minute pitch per team", "Prototype required (video, images or sample)",
-                  "Pitch must cover problem, solution, features, competition, audience, feasibility"],
-    },
-    "digital-art": {
-        "name": "Digital Art — Pen Tablet Challenge",
-        "fee": 3000,
-        "icon": "palette",
-        "desc": "Create an original digital illustration live at the event using a pen tablet.",
-        "specs": ["Artwork created during the competition", "No copied or pre-made work",
-                  "Bring your own laptop & software"],
-    },
-    "web-dev": {
-        "name": "Web Development Challenge",
-        "fee": 3000,
-        "icon": "globe",
-        "desc": "Design and build an attractive, functional, user-friendly website "
-                "based on the given requirements.",
-        "specs": ["Tools: Canva, HTML, Google Sites, WordPress",
-                  "Original, functional work", "Bring your own laptop & internet"],
-    },
-    "tug-of-bots": {
-        "name": "Tug of Bots",
-        "fee": 3000,
-        "icon": "link",
-        "desc": "A head-to-head battle of strength — pull the opposing robot beyond "
-                "the boundary line.",
-        "specs": ["Max 3 kg, 30×30×25 cm", "6V–12V battery",
-                  "Strong hook/loop for the rope", "Forward & backward movement"],
-    },
-}
+# Fees are PER PLAYER, by how many games that player plays (max 2 games each).
+FEE_ONE_GAME = 1500
+FEE_TWO_GAMES = 2000
+MAX_GAMES_PER_PLAYER = 2
+REG_PREFIX = "SF"   # registration ids look like SF-0001
 
-CATEGORIES = {
-    "jet-fire": "Jet Fire (Grades V–VII)",
-    "optimus-prime": "Optimus Prime (Grades VIII–X M / XI O)",
+
+def reg_code(reg_id):
+    return f"{REG_PREFIX}-{reg_id:04d}"
+
+SPORTS = {
+    "volleyball": {
+        "name": "Volleyball",
+        "team_size": 6,
+        "icon": "ball",
+        "desc": "6-a-side. Send the ball over the net within 3 touches; a point is "
+                "scored on every rally.",
+        "rules": ["Each team has 6 players", "Up to 3 touches before returning the ball",
+                  "Matches to 25 points, win by 2", "Rally scoring — a point every rally",
+                  "Faults: out of bounds, touching the net, or more than 3 touches"],
+    },
+    "throwball": {
+        "name": "Throwball",
+        "team_size": 7,
+        "icon": "ball",
+        "desc": "7-a-side. Throw the ball over the net into the opponent's court using "
+                "your hands.",
+        "rules": ["Each team has 7 players", "Throw with hands; brief catch & hold allowed",
+                  "Up to 3 touches before returning", "Serve from behind the baseline",
+                  "Matches to 15 or 21 points, win by 2"],
+    },
+    "futsal": {
+        "name": "Futsal",
+        "team_size": 5,
+        "icon": "ball",
+        "desc": "5-a-side indoor football with a smaller low-bounce ball — fast passing "
+                "and ball control.",
+        "rules": ["5 players including a goalkeeper", "Smaller, low-bounce ball",
+                  "Two 20-minute halves", "No offside; kick-ins replace throw-ins",
+                  "Unlimited substitutions during play"],
+    },
+    "dodgeball": {
+        "name": "Dodgeball",
+        "team_size": 6,
+        "icon": "target",
+        "desc": "6-a-side. Eliminate opponents by hitting them (below the shoulders) or "
+                "catching their throw.",
+        "rules": ["Each team has 6 players", "Soft rubber balls; hit below the shoulders",
+                  "A hit player is eliminated", "Catch a throw → thrower is out & revive a teammate",
+                  "Eliminate all opponents to win"],
+    },
+    "tug-of-war": {
+        "name": "Tug of War",
+        "team_size": 8,
+        "icon": "link",
+        "desc": "Two teams pull the rope from opposite ends — drag the opposing team "
+                "across the line.",
+        "rules": ["Two teams pull from opposite ends", "Pull the opponents across the line",
+                  "Game begins on the official signal", "No illegal moves"],
+    },
+    "arm-wrestling": {
+        "name": "Arm Wrestling",
+        "team_size": 1,
+        "icon": "activity",
+        "desc": "One-on-one. Pin your opponent's hand to the pad, elbows staying on the "
+                "designated pads.",
+        "rules": ["Individual event (1 player)", "Pin the opponent's hand to the pad",
+                  "Elbows stay on the pads throughout", "Match starts on the referee's signal",
+                  "Win the required number of rounds to win"],
+    },
+    "table-tennis-singles": {
+        "name": "Table Tennis — Singles",
+        "team_size": 1,
+        "icon": "ping-pong",
+        "desc": "One-on-one. Serve diagonally and outplay your opponent across the net.",
+        "rules": ["Individual event (1 player)", "Serve diagonally into the service court",
+                  "Let the ball bounce once before returning", "Point on a failed legal return",
+                  "First to the required score wins"],
+    },
+    "table-tennis-doubles": {
+        "name": "Table Tennis — Doubles",
+        "team_size": 2,
+        "icon": "ping-pong",
+        "desc": "2-a-side. Partners hit alternately, serving diagonally in the correct "
+                "rotation.",
+        "rules": ["Each team has 2 players", "Serve diagonally into the service court",
+                  "Partners hit the ball alternately", "Follow the correct serve & rotation order",
+                  "First to the required score wins"],
+    },
 }
 
 EVENT_INFO = {
-    "date": "Saturday, 3 October 2026",
-    "time": "12:00 pm – 6:00 pm",
-    "venue": "LGS Wapda Town, Punjab Society Branch, 19-C-II PGECHS, Lahore",
-    "deadline": "20 September 2026",
+    "name": "LGS WT Sports Fest 2026",
+    "subtitle": "Inter-School Sports Fest 2026",
+    "date": "Saturday, 26 September 2026",
+    "venue": "LGS Wapda Town — Punjab Campus, Lahore",
+    "deadline": "24 September 2026",
     "email": "lgswtrobotech@gmail.com",
-    "instagram": "robotechlgs",
+    "instagram": "",
     "bank": "Askari Bank — Account No. 03201650001721",
-    "contact_person": "M Usman (0323 8409150)",
-    "contact_info": "Miss Arooba Khalid (0321-7114141)",
+    "contact_person": "Muhammad Usman (0323 8409150)",
+    "contact_info": "Abdul Qayyum (0321 4091541)",
+    "fee_one": FEE_ONE_GAME,
+    "fee_two": FEE_TWO_GAMES,
 }
 
 # ---------------------------------------------------------------------------
@@ -258,14 +246,14 @@ SCHEMA_SQLITE = """
         confirm_email_sent TEXT,
         created_at  TEXT NOT NULL
     );
-    CREATE TABLE IF NOT EXISTS teams (
+    CREATE TABLE IF NOT EXISTS players (
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         registration_id INTEGER NOT NULL REFERENCES registrations(id) ON DELETE CASCADE,
-        challenge       TEXT NOT NULL,
-        category        TEXT NOT NULL,
-        member1         TEXT NOT NULL,
-        member2         TEXT,
-        fee             INTEGER NOT NULL
+        sport           TEXT NOT NULL,
+        name            TEXT NOT NULL,
+        father_name     TEXT,
+        dob             TEXT,
+        cnic            TEXT
     );
 """
 
@@ -285,14 +273,14 @@ SCHEMA_POSTGRES = """
         confirm_email_sent TEXT,
         created_at  TEXT NOT NULL
     );
-    CREATE TABLE IF NOT EXISTS teams (
+    CREATE TABLE IF NOT EXISTS players (
         id              SERIAL PRIMARY KEY,
         registration_id INTEGER NOT NULL REFERENCES registrations(id) ON DELETE CASCADE,
-        challenge       TEXT NOT NULL,
-        category        TEXT NOT NULL,
-        member1         TEXT NOT NULL,
-        member2         TEXT,
-        fee             INTEGER NOT NULL
+        sport           TEXT NOT NULL,
+        name            TEXT NOT NULL,
+        father_name     TEXT,
+        dob             TEXT,
+        cnic            TEXT
     );
 """
 
@@ -301,21 +289,10 @@ def init_db():
     if IS_POSTGRES:
         with psycopg.connect(DATABASE_URL) as conn:
             conn.execute(SCHEMA_POSTGRES)
-            # Migrate cloud databases created before newer columns existed.
-            conn.execute("ALTER TABLE registrations ADD COLUMN IF NOT EXISTS txn_ref TEXT")
             conn.commit()
         return
     with sqlite3.connect(DB_PATH) as db:
         db.executescript(SCHEMA_SQLITE)
-        # Migrate local databases created before newer features.
-        cols = {row[1] for row in db.execute("PRAGMA table_info(registrations)")}
-        for col, decl in [("txn_ref", "TEXT"),
-                          ("receipt_file", "TEXT"), ("receipt_mime", "TEXT"),
-                          ("receipt_data", "BLOB"),
-                          ("status", "TEXT NOT NULL DEFAULT 'pending'"),
-                          ("confirm_email_sent", "TEXT")]:
-            if col not in cols:
-                db.execute(f"ALTER TABLE registrations ADD COLUMN {col} {decl}")
 
 
 # ---------------------------------------------------------------------------
@@ -324,8 +301,25 @@ def init_db():
 
 @app.route("/")
 def index():
-    return render_template("index.html", challenges=CHALLENGES, info=EVENT_INFO,
-                           categories=CATEGORIES)
+    return render_template("index.html", sports=SPORTS, info=EVENT_INFO)
+
+
+def player_key(p):
+    """A person is identified by their CNIC/B-Form (digits) if given, else name."""
+    digits = re.sub(r"\D", "", p["cnic"])
+    return digits if digits else "name:" + p["name"].lower()
+
+
+def compute_fees(players):
+    """Return (total_fee, per_player_games) — one player pays by how many
+    distinct sports (games) they are entered in, capped at MAX_GAMES."""
+    games_by_person = {}
+    for p in players:
+        games_by_person.setdefault(player_key(p), set()).add(p["sport"])
+    total = 0
+    for key, sports in games_by_person.items():
+        total += FEE_TWO_GAMES if len(sports) >= 2 else FEE_ONE_GAME
+    return total, games_by_person
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -341,7 +335,7 @@ def register():
         txn_ref = form.get("txn_ref", "").strip()
 
         if not school:
-            errors.append("School name is required.")
+            errors.append("Institution name is required.")
         if not focal_name:
             errors.append("Focal person's name is required.")
         phone_digits = re.sub(r"\D", "", phone)
@@ -354,31 +348,47 @@ def register():
             errors.append("Please enter the Transaction ID / Reference Number "
                           "from your bank transfer (found on the receipt).")
 
-        challenges = form.getlist("challenge[]")
-        categories = form.getlist("category[]")
-        members1 = form.getlist("member1[]")
-        members2 = form.getlist("member2[]")
+        p_sport = form.getlist("player_sport[]")
+        p_name = form.getlist("player_name[]")
+        p_father = form.getlist("player_father[]")
+        p_dob = form.getlist("player_dob[]")
+        p_cnic = form.getlist("player_cnic[]")
 
-        teams = []
-        for i, (ch, cat, m1, m2) in enumerate(
-                zip(challenges, categories, members1, members2), start=1):
-            ch, cat, m1, m2 = ch.strip(), cat.strip(), m1.strip(), m2.strip()
-            if not (ch or m1 or m2):
-                continue  # fully empty row — ignore
-            if ch not in CHALLENGES:
-                errors.append(f"Team {i}: please select a challenge.")
+        players = []
+        for i, (sp, nm, fa, db_, cn) in enumerate(
+                zip(p_sport, p_name, p_father, p_dob, p_cnic), start=1):
+            sp, nm, fa, db_, cn = (sp.strip(), nm.strip(), fa.strip(),
+                                   db_.strip(), cn.strip())
+            if not (nm or fa or cn):
+                continue  # blank row — ignore
+            if sp not in SPORTS:
+                errors.append(f"Player {i}: please choose a valid sport.")
                 continue
-            if cat not in CATEGORIES:
-                errors.append(f"Team {i}: please select a category.")
+            if not nm:
+                errors.append(f"Player {i} ({SPORTS[sp]['name']}): name is required.")
                 continue
-            if not m1:
-                errors.append(f"Team {i}: at least one participant name is required.")
-                continue
-            teams.append({"challenge": ch, "category": cat, "member1": m1,
-                          "member2": m2 or None, "fee": CHALLENGES[ch]["fee"]})
+            if not fa:
+                errors.append(f"{nm}: father's name is required.")
+            if not db_:
+                errors.append(f"{nm}: date of birth is required.")
+            cnic_digits = re.sub(r"\D", "", cn)
+            if len(cnic_digits) != 13:
+                errors.append(f"{nm}: CNIC / B-Form must be 13 digits "
+                              f"(e.g. 35201-1234567-8).")
+            players.append({"sport": sp, "name": nm, "father_name": fa,
+                            "dob": db_, "cnic": cn})
 
-        if not teams and not errors:
-            errors.append("Please add at least one team.")
+        if not players and not errors:
+            errors.append("Please add at least one player to at least one sport.")
+
+        # Max 2 games per player (identified by CNIC / B-Form).
+        total, games_by_person = compute_fees(players)
+        for p in players:
+            if len(games_by_person.get(player_key(p), set())) > MAX_GAMES_PER_PLAYER:
+                errors.append(f"{p['name']} is entered in more than "
+                              f"{MAX_GAMES_PER_PLAYER} games — each player may play "
+                              f"at most {MAX_GAMES_PER_PLAYER}.")
+                break
 
         receipt = request.files.get("receipt")
         receipt_ext = None
@@ -391,7 +401,6 @@ def register():
                 errors.append("The payment screenshot must be a PNG, JPG, WEBP image or a PDF.")
 
         if not errors:
-            total = sum(t["fee"] for t in teams)
             receipt_bytes = receipt.read()
             db = get_db()
             insert_sql = (
@@ -405,26 +414,36 @@ def register():
                                     params).fetchone()["id"]
             else:
                 reg_id = db.execute(insert_sql, params).lastrowid
-            # The receipt lives in the database so it survives redeploys on
-            # hosts with ephemeral disks.
-            receipt_name = f"WTR-{reg_id:04d}{receipt_ext}"
+            receipt_name = f"{reg_code(reg_id)}{receipt_ext}"
             db.execute("UPDATE registrations SET receipt_file = ?, "
                        "receipt_mime = ?, receipt_data = ? WHERE id = ?",
                        (receipt_name,
                         RECEIPT_MIME.get(receipt_ext, "application/octet-stream"),
                         receipt_bytes, reg_id))
             db.executemany(
-                "INSERT INTO teams (registration_id, challenge, category, member1, member2, fee) "
-                "VALUES (?, ?, ?, ?, ?, ?)",
-                [(reg_id, t["challenge"], t["category"], t["member1"], t["member2"], t["fee"])
-                 for t in teams],
+                "INSERT INTO players (registration_id, sport, name, father_name, "
+                "dob, cnic) VALUES (?, ?, ?, ?, ?, ?)",
+                [(reg_id, p["sport"], p["name"], p["father_name"], p["dob"], p["cnic"])
+                 for p in players],
             )
             db.commit()
             return redirect(url_for("success", reg_id=reg_id))
 
-    return render_template("register.html", challenges=CHALLENGES,
-                           categories=CATEGORIES, info=EVENT_INFO,
+    return render_template("register.html", sports=SPORTS, info=EVENT_INFO,
                            errors=errors, form=form)
+
+
+def load_entries(reg_id):
+    """Return the players of a registration grouped by sport, in SPORTS order."""
+    players = get_db().execute(
+        "SELECT * FROM players WHERE registration_id = ? ORDER BY id",
+        (reg_id,)).fetchall()
+    by_sport = {}
+    for p in players:
+        by_sport.setdefault(p["sport"], []).append(p)
+    entries = [{"sport": key, "players": by_sport[key]}
+               for key in SPORTS if key in by_sport]
+    return entries, players
 
 
 @app.route("/success/<int:reg_id>")
@@ -433,23 +452,21 @@ def success(reg_id):
     reg = db.execute("SELECT * FROM registrations WHERE id = ?", (reg_id,)).fetchone()
     if reg is None:
         return redirect(url_for("index"))
-    teams = db.execute(
-        "SELECT * FROM teams WHERE registration_id = ? ORDER BY id", (reg_id,)
-    ).fetchall()
-    return render_template("success.html", reg=reg, teams=teams,
-                           challenges=CHALLENGES, categories=CATEGORIES,
+    entries, _ = load_entries(reg_id)
+    return render_template("success.html", reg=reg, entries=entries,
+                           reg_code=reg_code(reg["id"]), sports=SPORTS,
                            info=EVENT_INFO)
 
 
 @app.route("/status")
 def check_status():
-    """Public status checker — a school enters its WTR-#### id and sees whether
+    """Public status checker — a school enters its SF-#### id and sees whether
     the registration is pending, accepted, or rejected."""
     raw = request.args.get("ref", "").strip()
     if not raw:
         return render_template("check_status.html", info=EVENT_INFO)
 
-    # Accept "WTR-0001", "wtr 1", "0001", or "1".
+    # Accept "SF-0001", "sf 1", "0001", or "1".
     digits = re.sub(r"\D", "", raw)
     reg = None
     if digits:
@@ -458,15 +475,12 @@ def check_status():
                          (int(digits),)).fetchone()
     if reg is None:
         return render_template(
-            "check_status.html", info=EVENT_INFO, query=raw,
-            not_found=True)
+            "check_status.html", info=EVENT_INFO, query=raw, not_found=True)
 
-    teams = get_db().execute(
-        "SELECT * FROM teams WHERE registration_id = ? ORDER BY id",
-        (reg["id"],)).fetchall()
+    entries, _ = load_entries(reg["id"])
     return render_template("check_status.html", info=EVENT_INFO, query=raw,
-                           reg=reg, teams=teams, challenges=CHALLENGES,
-                           categories=CATEGORIES)
+                           reg=reg, entries=entries,
+                           reg_code=reg_code(reg["id"]), sports=SPORTS)
 
 
 @app.route("/receipt/<int:reg_id>")
@@ -520,52 +534,67 @@ def admin():
         return redirect(url_for("admin_login"))
     db = get_db()
     all_regs = db.execute("SELECT * FROM registrations ORDER BY id DESC").fetchall()
-    teams_by_reg = {}
-    for t in db.execute("SELECT * FROM teams ORDER BY id").fetchall():
-        teams_by_reg.setdefault(t["registration_id"], []).append(t)
 
-    challenge_counts = {key: 0 for key in CHALLENGES}
-    for row in db.execute(
-            "SELECT challenge, COUNT(*) AS n FROM teams GROUP BY challenge"):
-        challenge_counts[row["challenge"]] = row["n"]
+    all_players = db.execute("SELECT * FROM players ORDER BY id").fetchall()
+    entries_by_reg = {}          # reg_id -> [{sport, players}] in SPORTS order
+    players_by_reg = {}          # reg_id -> flat list
+    for p in all_players:
+        players_by_reg.setdefault(p["registration_id"], []).append(p)
+    for rid, plist in players_by_reg.items():
+        grouped = {}
+        for p in plist:
+            grouped.setdefault(p["sport"], []).append(p)
+        entries_by_reg[rid] = [{"sport": k, "players": grouped[k]}
+                               for k in SPORTS if k in grouped]
 
-    # Stats always reflect ALL registrations, not the filtered view.
+    sport_counts = {key: 0 for key in SPORTS}
+    for p in all_players:
+        if p["sport"] in sport_counts:
+            sport_counts[p["sport"]] += 1
+
     stats = {
         "registrations": len(all_regs),
-        "teams": sum(len(v) for v in teams_by_reg.values()),
+        "players": len(all_players),
         "fees_total": sum(r["total_fee"] for r in all_regs),
         "fees_verified": sum(r["total_fee"] for r in all_regs if r["status"] == "verified"),
         "pending": sum(1 for r in all_regs if r["status"] == "pending"),
     }
 
-    # Optional search. A pure-number or "WTR-####" query is treated as an exact
+    # Optional search. A pure-number or "SF-####" query is treated as an exact
     # registration-ID lookup; anything else is a case-insensitive substring
-    # match across school / focal person / email / phone / transaction ref.
+    # match across institution / focal person / email / phone / transaction ref
+    # and player names.
     q = request.args.get("q", "").strip()
     if q:
-        id_match = re.fullmatch(r"(?i)\s*(?:wtr[-\s]?)?0*(\d+)\s*", q)
+        id_match = re.fullmatch(r"(?i)\s*(?:sf[-\s]?)?0*(\d+)\s*", q)
         if id_match:
             rid = int(id_match.group(1))
             regs = [r for r in all_regs if r["id"] == rid]
         else:
             ql = q.lower()
-            regs = [r for r in all_regs if ql in " ".join(
-                str(x or "").lower() for x in (
-                    r["school"], r["focal_name"], r["email"],
-                    r["phone"], r["txn_ref"]))]
+            regs = []
+            for r in all_regs:
+                fields = [r["school"], r["focal_name"], r["email"], r["phone"],
+                          r["txn_ref"]]
+                fields += [p["name"] for p in players_by_reg.get(r["id"], [])]
+                if ql in " ".join(str(x or "").lower() for x in fields):
+                    regs.append(r)
     else:
         regs = all_regs
 
-    return render_template("admin.html", regs=regs, teams_by_reg=teams_by_reg,
-                           stats=stats, challenge_counts=challenge_counts,
-                           challenges=CHALLENGES, categories=CATEGORIES,
-                           info=EVENT_INFO, q=q, total=len(all_regs))
+    return render_template("admin.html", regs=regs, entries_by_reg=entries_by_reg,
+                           stats=stats, sport_counts=sport_counts, sports=SPORTS,
+                           reg_code=reg_code, info=EVENT_INFO, q=q,
+                           total=len(all_regs))
+
+
+EMAIL_FROM_NAME = "LGS WT Sports Fest 2026"
 
 
 def _send_via_smtp(to_addr, subject, body):
     msg = EmailMessage()
     msg["Subject"] = subject
-    msg["From"] = f"Robotech 6.0 — LGS Wapda Town <{SENDER_EMAIL or SMTP_USER}>"
+    msg["From"] = f"{EMAIL_FROM_NAME} <{SENDER_EMAIL or SMTP_USER}>"
     msg["To"] = to_addr
     msg.set_content(body)
     try:
@@ -581,8 +610,7 @@ def _send_via_smtp(to_addr, subject, body):
 def _send_via_brevo(to_addr, subject, body):
     """Send via the Brevo HTTP API — works on hosts that block SMTP ports."""
     payload = {
-        "sender": {"name": "Robotech 6.0 — LGS Wapda Town",
-                   "email": SENDER_EMAIL or SMTP_USER},
+        "sender": {"name": EMAIL_FROM_NAME, "email": SENDER_EMAIL or SMTP_USER},
         "to": [{"email": to_addr}],
         "subject": subject,
         "textContent": body,
@@ -604,60 +632,56 @@ def _send_via_brevo(to_addr, subject, body):
         return False, str(exc)
 
 
-def send_confirmation_email(reg, teams, sent_at):
+def send_confirmation_email(reg, entries, sent_at):
     """Send the registration-confirmed email. Returns (ok, error_message)."""
     if not BREVO_API_KEY and not (SMTP_USER and SMTP_PASSWORD):
         return False, ("email sending is not configured — set BREVO_API_KEY "
                        "or SMTP_USER/SMTP_PASSWORD in the environment")
-
-    team_lines = []
-    for i, t in enumerate(teams, 1):
-        members = t["member1"] + (f", {t['member2']}" if t["member2"] else "")
-        team_lines.append(f"  {i}. {CHALLENGES[t['challenge']]['name']} "
-                          f"[{CATEGORIES[t['category']]}] — {members}")
+    code = reg_code(reg["id"])
+    sport_lines = []
+    for e in entries:
+        names = ", ".join(p["name"] for p in e["players"])
+        sport_lines.append(f"  • {SPORTS[e['sport']]['name']} "
+                           f"({len(e['players'])}): {names}")
 
     body = f"""Dear {reg['focal_name']},
 
-Great news! Your payment has been verified and your registration for
-ROBOTECH CHALLENGE 6.0 is now CONFIRMED.
+Great news! Your payment has been verified and your registration for the
+LGS WT SPORTS FEST 2026 is now CONFIRMED.
 
-Your Registration ID is WTR-{reg['id']:04d}.
+Your Registration ID is {code}.
 You can check the live status of your registration anytime on our website:
   {SITE_URL}/status
-Just open that link and enter your Registration ID: WTR-{reg['id']:04d}
+Just open that link and enter your Registration ID: {code}
 
 ------------------------------------------------------------
-Registration ID : WTR-{reg['id']:04d}
-School          : {reg['school']}
+Registration ID : {code}
+Institution     : {reg['school']}
 Fee received    : Rs {reg['total_fee']:,}
 Transaction ref : {reg['txn_ref'] or 'N/A'}
 Confirmed on    : {sent_at.replace("T", " at ")}
 
-Registered teams:
-{chr(10).join(team_lines)}
+Registered sports & players:
+{chr(10).join(sport_lines)}
 
 Event details:
   Date  : {EVENT_INFO['date']}
-  Time  : {EVENT_INFO['time']}
   Venue : {EVENT_INFO['venue']}
 
 Important reminders:
-  - Teams must bring their own laptops/devices with all required software
-    (Arduino IDE, Photoshop, Unity, etc.) pre-installed.
-  - Every participant and faculty advisor must submit a signed liability
-    waiver at the registration desk before the opening ceremony.
-  - Formal attire (Eastern or Western) is mandatory.
-  - Each school must send at least one chaperone.
+  - Every participant must submit a signed Waiver of Liability at the
+    registration desk before playing.
+  - Each player may participate in a maximum of {MAX_GAMES_PER_PLAYER} games.
+  - Play fairly, respect referees and officials, and show good sportsmanship.
 
-Follow @{EVENT_INFO['instagram']} on Instagram for updates and announcements.
 Questions? Contact {EVENT_INFO['contact_person']} or {EVENT_INFO['contact_info']}.
 
-We look forward to seeing your teams on event day!
+We look forward to seeing your players on event day!
 
-Team ROBOTECH
+Team Sports Fest
 LGS Wapda Town
 """
-    subject = f"Robotech 6.0 — Registration WTR-{reg['id']:04d} Confirmed"
+    subject = f"Sports Fest 2026 — Registration {code} Confirmed"
     if BREVO_API_KEY:
         return _send_via_brevo(reg["email"], subject, body)
     return _send_via_smtp(reg["email"], subject, body)
@@ -668,21 +692,22 @@ def send_rejection_email(reg):
     if not BREVO_API_KEY and not (SMTP_USER and SMTP_PASSWORD):
         return False, ("email sending is not configured — set BREVO_API_KEY "
                        "or SMTP_USER/SMTP_PASSWORD in the environment")
+    code = reg_code(reg["id"])
     body = f"""Dear {reg['focal_name']},
 
-Thank you for registering {reg['school']} for ROBOTECH CHALLENGE 6.0.
+Thank you for registering {reg['school']} for the LGS WT SPORTS FEST 2026.
 
 After reviewing your submission, we are sorry to inform you that your
 registration could NOT be accepted at this time.
 
-Your Registration ID is WTR-{reg['id']:04d}.
+Your Registration ID is {code}.
 You can check the live status of your registration anytime on our website:
   {SITE_URL}/status
-Just open that link and enter your Registration ID: WTR-{reg['id']:04d}
+Just open that link and enter your Registration ID: {code}
 
 ------------------------------------------------------------
-Registration ID : WTR-{reg['id']:04d}
-School          : {reg['school']}
+Registration ID : {code}
+Institution     : {reg['school']}
 Transaction ref : {reg['txn_ref'] or 'N/A'}
 
 This usually happens when the payment could not be verified against our
@@ -699,10 +724,10 @@ reason and how to correct it:
 If you believe this was a mistake, reply to this email with your payment
 proof and transaction reference number and we will review it again.
 
-Team ROBOTECH
+Team Sports Fest
 LGS Wapda Town
 """
-    subject = f"Robotech 6.0 — Registration WTR-{reg['id']:04d} Not Accepted"
+    subject = f"Sports Fest 2026 — Registration {code} Not Accepted"
     if BREVO_API_KEY:
         return _send_via_brevo(reg["email"], subject, body)
     return _send_via_smtp(reg["email"], subject, body)
@@ -710,31 +735,28 @@ LGS Wapda Town
 
 def deliver_confirmation(db, reg):
     """Send the confirmation email for a registration and stamp/flash the result."""
-    teams = db.execute(
-        "SELECT * FROM teams WHERE registration_id = ? ORDER BY id",
-        (reg["id"],)).fetchall()
+    entries, _ = load_entries(reg["id"])
     sent_at = datetime.now().isoformat(timespec="seconds")
-    ok, err = send_confirmation_email(reg, teams, sent_at)
+    ok, err = send_confirmation_email(reg, entries, sent_at)
+    code = reg_code(reg["id"])
     if ok:
         db.execute("UPDATE registrations SET confirm_email_sent = ? WHERE id = ?",
                    (sent_at, reg["id"]))
         db.commit()
-        flash(f"WTR-{reg['id']:04d} — confirmation email sent to {reg['email']}.",
-              "ok")
+        flash(f"{code} — confirmation email sent to {reg['email']}.", "ok")
     else:
-        flash(f"WTR-{reg['id']:04d} — confirmation email was NOT sent: {err}",
-              "warn")
+        flash(f"{code} — confirmation email was NOT sent: {err}", "warn")
 
 
 def deliver_rejection(db, reg):
     """Send the declined email and flash the result."""
     ok, err = send_rejection_email(reg)
+    code = reg_code(reg["id"])
     if ok:
-        flash(f"WTR-{reg['id']:04d} — declined; a notification email was sent "
-              f"to {reg['email']}.", "ok")
+        flash(f"{code} — declined; a notification email was sent to "
+              f"{reg['email']}.", "ok")
     else:
-        flash(f"WTR-{reg['id']:04d} — declined, but the email was NOT sent: {err}",
-              "warn")
+        flash(f"{code} — declined, but the email was NOT sent: {err}", "warn")
 
 
 @app.route("/admin/status/<int:reg_id>", methods=["POST"])
@@ -756,7 +778,7 @@ def admin_set_status(reg_id):
             if reg["confirm_email_sent"]:
                 # Re-sending an identical email gets blocked by Gmail as spam;
                 # the organizer can use "Resend Email" deliberately instead.
-                flash(f"WTR-{reg_id:04d} verified — confirmation email was "
+                flash(f"{reg_code(reg_id)} verified — confirmation email was "
                       f"already sent on "
                       f"{reg['confirm_email_sent'].replace('T', ' at ')}, so it "
                       f"was not sent again. Use “Resend Email” if the school "
@@ -792,33 +814,34 @@ def admin_export():
     db = get_db()
     buf = io.StringIO()
     writer = csv.writer(buf)
-    writer.writerow(["Registration ID", "School", "Focal Person", "Phone", "Email",
-                     "Challenge", "Category", "Participant 1", "Participant 2",
-                     "Team Fee", "Transaction Ref", "Payment Status",
-                     "Receipt File", "Submitted"])
+    writer.writerow(["Registration ID", "Institution", "Focal Person", "Phone",
+                     "Email", "Sport", "Player Name", "Father's Name",
+                     "Date of Birth", "CNIC / B-Form", "Total Fee (registration)",
+                     "Transaction Ref", "Payment Status", "Receipt File",
+                     "Submitted"])
     rows = db.execute(
-        "SELECT r.*, t.challenge, t.category, t.member1, t.member2, t.fee AS team_fee "
-        "FROM registrations r JOIN teams t ON t.registration_id = r.id "
-        "ORDER BY r.id, t.id").fetchall()
+        "SELECT r.*, p.sport, p.name AS pname, p.father_name, p.dob, p.cnic "
+        "FROM registrations r JOIN players p ON p.registration_id = r.id "
+        "ORDER BY r.id, p.id").fetchall()
     for row in rows:
         writer.writerow([
-            f"WTR-{row['id']:04d}", row["school"], row["focal_name"], row["phone"],
-            row["email"], CHALLENGES[row["challenge"]]["name"],
-            CATEGORIES[row["category"]], row["member1"], row["member2"] or "",
-            row["team_fee"], row["txn_ref"] or "", row["status"],
-            row["receipt_file"] or "MISSING", row["created_at"],
+            reg_code(row["id"]), row["school"], row["focal_name"], row["phone"],
+            row["email"],
+            SPORTS[row["sport"]]["name"] if row["sport"] in SPORTS else row["sport"],
+            row["pname"], row["father_name"] or "", row["dob"] or "",
+            row["cnic"] or "", row["total_fee"], row["txn_ref"] or "",
+            row["status"], row["receipt_file"] or "MISSING", row["created_at"],
         ])
     return Response(
         "\ufeff" + buf.getvalue(), mimetype="text/csv",
         headers={"Content-Disposition":
-                 "attachment; filename=robotech6_registrations.csv"})
+                 "attachment; filename=sportsfest2026_registrations.csv"})
 
 
 @app.errorhandler(413)
 def file_too_large(e):
     return render_template(
-        "register.html", challenges=CHALLENGES, categories=CATEGORIES,
-        info=EVENT_INFO, form={},
+        "register.html", sports=SPORTS, info=EVENT_INFO, form={},
         errors=[f"The uploaded screenshot is too large — maximum size is "
                 f"{MAX_RECEIPT_MB} MB. Please compress it and try again."]), 413
 
