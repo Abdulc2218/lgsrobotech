@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Check Registration Status — Robotech Challenge 6.0{% endblock %}
+{% block title %}Check Registration Status — LGS WT Sports Fest 2026{% endblock %}
 {% block content %}
 
 <section class="section form-section">
@@ -8,12 +8,12 @@
     This feature is only for schools that have already completed a registration.
     You need the Registration ID that was given to you when you signed up.</p>
   <p class="section-sub">Enter the Registration ID you received when you signed up
-    (for example <strong>WTR-0001</strong>) to see the live status of your entry.</p>
+    (for example <strong>SF-0001</strong>) to see the live status of your entry.</p>
 
   <form method="get" action="{{ url_for('check_status') }}" class="status-check-form card">
     <label>Registration ID
       <input type="text" name="ref" required maxlength="20"
-             value="{{ query or '' }}" placeholder="WTR-0001" autofocus>
+             value="{{ query or '' }}" placeholder="SF-0001" autofocus>
     </label>
     <button type="submit" class="btn btn-lg">Check Status</button>
   </form>
@@ -36,13 +36,13 @@
       {% else %}<svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg>{% endif %}
     </div>
 
-    <p class="status-regid">WTR-{{ "%04d"|format(reg.id) }} · {{ reg.school }}</p>
+    <p class="status-regid">{{ reg_code }} · {{ reg.school }}</p>
 
     {% if reg.status == "verified" %}
     <h3 class="green">Accepted — Registration Confirmed</h3>
     <p>Your payment has been verified and your registration is <strong>confirmed</strong>.
       A confirmation email was sent to your registered address. We look forward to
-      seeing your teams on event day!</p>
+      seeing your players on event day!</p>
     {% elif reg.status == "rejected" %}
     <h3 class="danger-text">Not Accepted</h3>
     <p>Unfortunately your registration was <strong>not accepted</strong>. This is often
@@ -57,23 +57,19 @@
       will update automatically.</p>
     {% endif %}
 
-    {% if teams %}
+    {% for e in entries %}
     <div class="table-wrap">
+      <h4 class="status-sport"><svg class="icon" aria-hidden="true"><use href="#i-{{ sports[e.sport].icon }}"/></svg> {{ sports[e.sport].name }}</h4>
       <table class="teams-table">
-        <thead><tr><th>#</th><th>Challenge</th><th>Category</th><th>Participants</th></tr></thead>
+        <thead><tr><th>#</th><th>Player</th></tr></thead>
         <tbody>
-          {% for t in teams %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td><svg class="icon" aria-hidden="true"><use href="#i-{{ challenges[t.challenge].icon }}"/></svg> {{ challenges[t.challenge].name }}</td>
-            <td>{{ categories[t.category] }}</td>
-            <td>{{ t.member1 }}{% if t.member2 %}, {{ t.member2 }}{% endif %}</td>
-          </tr>
+          {% for p in e.players %}
+          <tr><td>{{ loop.index }}</td><td>{{ p.name }}</td></tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
-    {% endif %}
+    {% endfor %}
   </div>
   {% endif %}
 </section>

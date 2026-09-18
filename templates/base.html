@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}Robotech Challenge 6.0 — LGS Wapda Town{% endblock %}</title>
+  <title>{% block title %}LGS WT Sports Fest 2026{% endblock %}</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,11 +16,11 @@
   <nav class="nav">
     <a href="{{ url_for('index') }}" class="nav-brand">
       <img class="nav-crest" src="{{ url_for('static', filename='lgs-logo.png') }}" alt="LGS logo">
-      ROBOTECH <span class="accent">6.0</span>
+      SPORTS FEST <span class="accent">2026</span>
     </a>
     <div class="nav-links">
       <a href="{{ url_for('index') }}#details">Details</a>
-      <a href="{{ url_for('index') }}#challenges">Challenges</a>
+      <a href="{{ url_for('index') }}#sports">Sports</a>
       <a href="{{ url_for('index') }}#rules">Rules</a>
       <a href="{{ url_for('check_status') }}">Check Status</a>
       <a href="{{ url_for('register') }}" class="btn btn-small">Register Now</a>
@@ -35,18 +35,20 @@
     <div class="footer-grid">
       <div>
         <img class="footer-crest" src="{{ url_for('static', filename='lgs-logo.png') }}" alt="Lahore Grammar School logo">
-        <h4>ROBOTECH CHALLENGE 6.0</h4>
-        <p>Lahore Grammar School — Wapda Town Branch<br>
-        Under the banner of Gramma Demic</p>
-        <p class="tagline-sm">Build Today. <span class="accent">Transform</span> Tomorrow.</p>
+        <h4>LGS WT SPORTS FEST 2026</h4>
+        <p>Lahore Grammar School (Landmark Project)<br>
+        Wapda Town, Lahore</p>
+        <p class="tagline-sm">Inter-School <span class="accent">Sports Fest</span> 2026</p>
       </div>
       <div>
         <h4>Contact</h4>
         <p>{{ info.contact_person }}<br>
-        For information: {{ info.contact_info }}<br>
-        <a href="mailto:{{ info.email }}">{{ info.email }}</a><br>
-        <a href="https://instagram.com/{{ info.instagram }}" target="_blank" rel="noopener" class="social-link">
+        {{ info.contact_info }}<br>
+        <a href="mailto:{{ info.email }}">{{ info.email }}</a></p>
+        {% if info.instagram %}
+        <p><a href="https://instagram.com/{{ info.instagram }}" target="_blank" rel="noopener" class="social-link">
           <svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg> @{{ info.instagram }}</a></p>
+        {% endif %}
       </div>
       <div>
         <h4>Venue</h4>
@@ -54,7 +56,7 @@
         <p>Fee payments: {{ info.bank }}</p>
       </div>
     </div>
-    <p class="footer-note">© 2026 LGS Wapda Town — Team Robotech ·
+    <p class="footer-note">© 2026 LGS Wapda Town — Sports Fest ·
       <a href="{{ url_for('admin') }}">Organizers</a></p>
   </footer>
   <script src="{{ url_for('static', filename='matrix.js') }}"></script>

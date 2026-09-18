@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Registration Received — Robotech Challenge 6.0{% endblock %}
+{% block title %}Registration Received — LGS WT Sports Fest 2026{% endblock %}
 {% block content %}
 
 <section class="section form-section">
@@ -7,14 +7,14 @@
     <div class="success-icon"><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg></div>
     <h2>Registration <span class="green">Received!</span></h2>
     <p class="section-sub">Your registration ID is
-      <strong class="reg-id">WTR-{{ "%04d"|format(reg.id) }}</strong> — please quote it in
+      <strong class="reg-id">{{ reg_code }}</strong> — please quote it in
       all correspondence.</p>
   </div>
 
   <div class="card">
     <h3>Registration Summary</h3>
     <table class="summary-table">
-      <tr><th>School</th><td>{{ reg.school }}</td></tr>
+      <tr><th>Institution</th><td>{{ reg.school }}</td></tr>
       <tr><th>Focal Person</th><td>{{ reg.focal_name }}</td></tr>
       <tr><th>Contact</th><td>{{ reg.phone }}</td></tr>
       <tr><th>Email</th><td>{{ reg.email }}</td></tr>
@@ -22,68 +22,56 @@
       <tr><th>Submitted</th><td>{{ reg.created_at.replace("T", " at ") }}</td></tr>
     </table>
 
-    <h3 class="mt">Teams</h3>
+    {% for e in entries %}
+    <h3 class="mt"><svg class="icon" aria-hidden="true"><use href="#i-{{ sports[e.sport].icon }}"/></svg> {{ sports[e.sport].name }}</h3>
     <div class="table-wrap">
       <table class="teams-table">
-        <thead>
-          <tr><th>#</th><th>Challenge</th><th>Category</th><th>Participants</th><th>Fee</th></tr>
-        </thead>
+        <thead><tr><th>#</th><th>Player</th><th>Father's Name</th><th>Date of Birth</th><th>CNIC / B-Form</th></tr></thead>
         <tbody>
-          {% for t in teams %}
+          {% for p in e.players %}
           <tr>
             <td>{{ loop.index }}</td>
-            <td>{{ challenges[t.challenge].name }}</td>
-            <td>{{ categories[t.category] }}</td>
-            <td>{{ t.member1 }}{% if t.member2 %}, {{ t.member2 }}{% endif %}</td>
-            <td>Rs {{ "{:,}".format(t.fee) }}</td>
+            <td>{{ p.name }}</td>
+            <td>{{ p.father_name or "—" }}</td>
+            <td>{{ p.dob or "—" }}</td>
+            <td>{{ p.cnic or "—" }}</td>
           </tr>
           {% endfor %}
         </tbody>
-        <tfoot>
-          <tr><th colspan="4">Total</th><th>Rs {{ "{:,}".format(reg.total_fee) }}</th></tr>
-        </tfoot>
       </table>
     </div>
+    {% endfor %}
+
+    <table class="summary-table mt">
+      <tr><th>Total Fee</th><td class="fee">Rs {{ "{:,}".format(reg.total_fee) }}</td></tr>
+    </table>
   </div>
 
   <div class="card payment-card">
     {% if reg.receipt_file %}
     <h3><svg class="icon" aria-hidden="true"><use href="#i-credit-card"/></svg> Payment Proof Received</h3>
     <p>Your transaction screenshot has been uploaded and attached to registration
-      <strong>WTR-{{ "%04d"|format(reg.id) }}</strong>. The organizing team will verify
-      the payment of <strong>Rs {{ "{:,}".format(reg.total_fee) }}</strong> and confirm
-      your registration via WhatsApp or email.</p>
+      <strong>{{ reg_code }}</strong>. The organizing team will verify the payment of
+      <strong>Rs {{ "{:,}".format(reg.total_fee) }}</strong> and confirm your registration
+      via WhatsApp or email.</p>
     {% if reg.receipt_file.lower().endswith(".pdf") %}
     <p><a href="{{ url_for('receipt', reg_id=reg.id) }}" target="_blank">View uploaded receipt (PDF)</a></p>
     {% else %}
     <img class="receipt-preview" src="{{ url_for('receipt', reg_id=reg.id) }}"
          alt="Uploaded transaction screenshot">
     {% endif %}
-    {% else %}
-    <h3><svg class="icon" aria-hidden="true"><use href="#i-credit-card"/></svg> Next Step: Payment</h3>
-    <p>To confirm your registration, transfer the total fee of
-      <strong>Rs {{ "{:,}".format(reg.total_fee) }}</strong> to:</p>
-    <p class="bank-box">{{ info.bank }}</p>
-    <p>Then email your payment receipt (with registration ID
-      <strong>WTR-{{ "%04d"|format(reg.id) }}</strong>) to
-      <a href="mailto:{{ info.email }}">{{ info.email }}</a>
-      before <strong>{{ info.deadline }}</strong>.</p>
     {% endif %}
     <p>Questions? Contact {{ info.contact_person }} or {{ info.contact_info }}.</p>
-    <p class="follow-line">Follow
-      <a href="https://instagram.com/{{ info.instagram }}" target="_blank" rel="noopener" class="social-link">
-        <svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg> @{{ info.instagram }}</a>
-      on Instagram for event updates and announcements.</p>
   </div>
 
   <div class="card status-track-card">
     <h3><svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg> Track Your Registration</h3>
     <p>You can check the live status of your registration (Pending, Accepted, or
       Rejected) anytime on our website — just enter your Registration ID
-      <strong>WTR-{{ "%04d"|format(reg.id) }}</strong> on the status page.
+      <strong>{{ reg_code }}</strong> on the status page.
       You will <strong>also receive an email</strong> at {{ reg.email }} once your
       payment is verified.</p>
-    <a href="{{ url_for('check_status', ref='WTR-%04d'|format(reg.id)) }}" class="btn">Check My Status</a>
+    <a href="{{ url_for('check_status', ref=reg_code) }}" class="btn">Check My Status</a>
   </div>
 
   <div class="success-actions">

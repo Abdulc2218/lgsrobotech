@@ -5,18 +5,18 @@
   <div class="hero-inner">
     <img class="hero-crest" src="{{ url_for('static', filename='lgs-logo.png') }}"
          alt="Lahore Grammar School crest">
-    <p class="hero-school">LAHORE GRAMMAR SCHOOL — WAPDA TOWN BRANCH</p>
-    <p class="hero-invite">YOU ARE INVITED TO</p>
-    <h1 class="hero-title">ROBOTECH<br>CHALLENGE <span class="accent">6.0</span></h1>
-    <p class="hero-tagline">BUILD TODAY. <span class="green">TRANSFORM</span> TOMORROW.</p>
+    <p class="hero-school">LAHORE GRAMMAR SCHOOL (LANDMARK PROJECT) — WAPDA TOWN</p>
+    <p class="hero-invite">YOU ARE INVITED TO THE</p>
+    <h1 class="hero-title">LGS WT<br>SPORTS FEST <span class="accent">2026</span></h1>
+    <p class="hero-tagline">INTER-SCHOOL <span class="green">SPORTS FEST</span> 2026</p>
     <div class="hero-chips">
       <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> {{ info.date }}</span>
-      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg> {{ info.time }}</span>
-      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-recycle"/></svg> Recycle to Upcycle</span>
+      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg> {{ info.venue }}</span>
+      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg> 8 Sports</span>
     </div>
     <div class="hero-actions">
       <a href="{{ url_for('register') }}" class="btn btn-lg">Register Your School</a>
-      <a href="#challenges" class="btn btn-lg btn-outline">Explore Challenges</a>
+      <a href="#sports" class="btn btn-lg btn-outline">Explore Sports</a>
     </div>
     <p class="hero-deadline"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg> Registration deadline: <strong>{{ info.deadline }}</strong></p>
   </div>
@@ -26,47 +26,49 @@
   <h2>Event <span class="accent">Details</span></h2>
   <div class="cards-4">
     <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div><h3>Date</h3><p>{{ info.date }}</p></div>
-    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg></div><h3>Timings</h3><p>{{ info.time }}</p></div>
     <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg></div><h3>Venue</h3><p>{{ info.venue }}</p></div>
+    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></div><h3>Open To</h3><p>All schools — male &amp; female participants</p></div>
     <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg></div><h3>Registration Deadline</h3><p>{{ info.deadline }}</p></div>
   </div>
 </section>
 
-<section class="section" id="categories">
-  <h2>Eligibility <span class="accent">Categories</span></h2>
-  <p class="section-sub">Participants compete in two categories based on their grade level.</p>
+<section class="section" id="fees">
+  <h2>Participation <span class="accent">Fee</span></h2>
+  <p class="section-sub">The fee is charged <strong>per player</strong>, based on how many
+    games that player takes part in. Each player may play a maximum of 2 games.</p>
   <div class="cards-2">
     <div class="card cat-card">
-      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-flame"/></svg></div>
-      <h3>Jet Fire</h3>
-      <p class="cat-grades">Grades V – VII</p>
-      <p>Beginner-friendly tracks and lighter robot specs for younger innovators.</p>
+      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg></div>
+      <h3>1 Game</h3>
+      <p class="cat-grades">Rs {{ "{:,}".format(info.fee_one) }} / player</p>
+      <p>For a player taking part in a single game.</p>
     </div>
     <div class="card cat-card">
-      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-shield"/></svg></div>
-      <h3>Optimus Prime</h3>
-      <p class="cat-grades">Grades VIII – X Matric / XI O-Level</p>
-      <p>Tougher problems, bigger robots, and advanced competition standards.</p>
+      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg></div>
+      <h3>2 Games</h3>
+      <p class="cat-grades">Rs {{ "{:,}".format(info.fee_two) }} / player</p>
+      <p>For a player taking part in two games (the maximum allowed).</p>
     </div>
   </div>
 </section>
 
-<section class="section" id="challenges">
-  <h2>The <span class="accent">11 Challenges</span></h2>
-  <p class="section-sub">Teams of up to 2 participants. A school may send multiple teams in any challenge.</p>
+<section class="section" id="sports">
+  <h2>The <span class="accent">8 Sports</span></h2>
+  <p class="section-sub">Register a team for each sport your school is entering.
+    A player can take part in up to 2 games.</p>
   <div class="challenge-grid">
-    {% for key, ch in challenges.items() %}
+    {% for key, sp in sports.items() %}
     <div class="card challenge-card">
       <div class="challenge-head">
-        <span class="challenge-icon"><svg class="icon" aria-hidden="true"><use href="#i-{{ ch.icon }}"/></svg></span>
-        <h3>{{ ch.name }}</h3>
+        <span class="challenge-icon"><svg class="icon" aria-hidden="true"><use href="#i-{{ sp.icon }}"/></svg></span>
+        <h3>{{ sp.name }}</h3>
       </div>
-      <p>{{ ch.desc }}</p>
+      <p>{{ sp.desc }}</p>
       <ul class="spec-list">
-        {% for s in ch.specs %}<li>{{ s }}</li>{% endfor %}
+        {% for r in sp.rules %}<li>{{ r }}</li>{% endfor %}
       </ul>
       <div class="challenge-foot">
-        <span class="fee">Rs {{ "{:,}".format(ch.fee) }} / team</span>
+        <span class="fee">{% if sp.team_size == 1 %}Individual{% else %}Team of {{ sp.team_size }}{% endif %}</span>
         <a href="{{ url_for('register') }}" class="btn btn-small">Register</a>
       </div>
     </div>
@@ -75,42 +77,35 @@
 </section>
 
 <section class="section" id="rules">
-  <h2>Rules & <span class="accent">Regulations</span></h2>
+  <h2>Code of <span class="accent">Conduct</span></h2>
   <div class="cards-2">
     <div class="card">
-      <h3>General Rules</h3>
+      <h3>Sportsmanship</h3>
       <ul class="rule-list">
-        <li>Only school-registered teams are allowed.</li>
-        <li>Each school must send at least one chaperone with its teams.</li>
-        <li>Teams must arrive at the venue well in time.</li>
-        <li>Bring your own laptops, internet devices / mobile hotspots — with Arduino, Photoshop, Unity or other required software pre-installed.</li>
-        <li>Students must wear name tags with their branch name.</li>
-        <li>No external help (from teachers etc.) during the competition.</li>
-        <li>Participant names must be sent by <strong>{{ info.deadline }}</strong>.</li>
-        <li>Multiple teams may participate from one school.</li>
+        <li>Play fairly and follow all rules and regulations.</li>
+        <li>All games are open to both male and female participants.</li>
+        <li>Respect referees and officials — accept their decisions without argument.</li>
+        <li>Treat teammates, opponents, organizers, and officials with respect.</li>
+        <li>Demonstrate good sportsmanship, teamwork, and discipline throughout.</li>
       </ul>
     </div>
     <div class="card">
-      <h3>Code of Conduct</h3>
+      <h3>Discipline &amp; Requirements</h3>
       <ul class="rule-list">
-        <li><strong>Attire:</strong> formal dress, Eastern or Western, is mandatory.</li>
-        <li><strong>Conduct:</strong> misconduct may lead to removal from the premises; the Executive Council's decisions are final.</li>
-        <li><strong>Photography:</strong> no photos/videos of staff or participants without consent — official coverage is by the event media team only.</li>
-        <li><strong>Zero tolerance</strong> for harassment, bullying, or abusive remarks — violations lead to expulsion of the entire delegation.</li>
-        <li><strong>Liability waiver:</strong> every participant and faculty advisor must submit a signed waiver at the registration desk before the opening ceremony.</li>
+        <li><strong>No</strong> abusive language, trash-talking, bullying, or physical aggression.</li>
+        <li>Participants uphold the values and reputation of their schools at all times.</li>
+        <li><strong>Each player may participate in a maximum of 2 games.</strong></li>
+        <li>Every participant must submit a signed <strong>Waiver of Liability</strong> at the registration desk before playing.</li>
+        <li>Players are responsible for the safekeeping of their personal belongings.</li>
       </ul>
     </div>
   </div>
 </section>
 
 <section class="section cta-band">
-  <h2>Ready to <span class="green">build the future</span>?</h2>
+  <h2>Ready to <span class="green">compete</span>?</h2>
   <p>Register your teams before {{ info.deadline }} — spots fill fast.</p>
   <a href="{{ url_for('register') }}" class="btn btn-lg">Register Now</a>
-  <p class="follow-line">Follow
-    <a href="https://instagram.com/{{ info.instagram }}" target="_blank" rel="noopener" class="social-link">
-      <svg class="icon" aria-hidden="true"><use href="#i-instagram"/></svg> @{{ info.instagram }}</a>
-    for updates &amp; announcements</p>
 </section>
 
 {% endblock %}

@@ -1,11 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Register — Robotech Challenge 6.0{% endblock %}
+{% block title %}Register — LGS WT Sports Fest 2026{% endblock %}
 {% block content %}
 
 <section class="section form-section">
   <h2>Online <span class="accent">Registration</span></h2>
-  <p class="section-sub">Fill in your school's details, add a team for each challenge you're entering,
-  and we'll calculate the total fee. Deadline: <strong>{{ info.deadline }}</strong>.</p>
+  <p class="section-sub">Enter your institution's details, add each sport you're entering
+    with its players, and we'll calculate the total fee. Deadline:
+    <strong>{{ info.deadline }}</strong>.</p>
 
   {% if errors %}
   <div class="alert">
@@ -16,11 +17,11 @@
 
   <form method="post" class="reg-form" enctype="multipart/form-data">
     <fieldset class="card">
-      <legend>School Information</legend>
+      <legend>Institution Information</legend>
       <div class="field-grid">
-        <label>School Name *
+        <label>Institution Name *
           <input type="text" name="school" required maxlength="120"
-                 value="{{ form.get('school', '') }}" placeholder="e.g. LGS Johar Town">
+                 value="{{ form.get('school', '') }}" placeholder="e.g. Beaconhouse Defence">
         </label>
         <label>Focal Person / Relevant Teacher *
           <input type="text" name="focal_name" required maxlength="80"
@@ -28,25 +29,26 @@
         </label>
         <label>Contact Number (active on WhatsApp) *
           <input type="tel" name="phone" id="phone" required maxlength="20"
-                 value="{{ form.get('phone', '') }}" placeholder="03XX XXXXXXX"
-                 autocomplete="tel">
+                 value="{{ form.get('phone', '') }}" placeholder="03XX XXXXXXX" autocomplete="tel">
           <small class="field-msg" id="phone-msg"></small>
         </label>
         <label>Email of Focal Person *
           <input type="email" name="email" id="email" required maxlength="120"
-                 value="{{ form.get('email', '') }}" placeholder="name@school.edu.pk"
-                 autocomplete="email">
+                 value="{{ form.get('email', '') }}" placeholder="name@school.edu.pk" autocomplete="email">
           <small class="field-msg" id="email-msg"></small>
         </label>
       </div>
     </fieldset>
 
     <fieldset class="card">
-      <legend>Teams</legend>
-      <p class="hint">Max 2 participants per team. Add one row per team — you can enter
-      multiple teams, in the same or different challenges.</p>
-      <div id="teams"></div>
-      <button type="button" class="btn btn-outline" id="add-team">+ Add Another Team</button>
+      <legend>Sports &amp; Players</legend>
+      <p class="hint">Add a block for each sport you're entering, then list that sport's
+        players with their details. A player may take part in a maximum of
+        <strong>2 games</strong> — enter the same CNIC / B-Form and we'll charge that
+        player once (Rs {{ "{:,}".format(info.fee_two) }} for 2 games).</p>
+      <div id="sports"></div>
+      <button type="button" class="btn btn-outline" id="add-sport">+ Add a Sport</button>
+      <p class="field-msg msg-bad" id="games-warning" hidden></p>
     </fieldset>
 
     <div class="card total-card">
@@ -94,189 +96,153 @@
   </form>
 </section>
 
-<template id="team-row-template">
-  <div class="team-row card">
-    <div class="team-row-head">
-      <strong class="team-label">Team</strong>
-      <button type="button" class="remove-team" title="Remove team" aria-label="Remove team"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
-    </div>
-    <div class="field-grid">
-      <label>Challenge *
-        <select name="challenge[]" class="challenge-select" required>
-          <option value="" disabled selected>Select a challenge…</option>
-          {% for key, ch in challenges.items() %}
-          <option value="{{ key }}" data-fee="{{ ch.fee }}">{{ ch.name }} — Rs {{ "{:,}".format(ch.fee) }}</option>
+<template id="sport-block-template">
+  <div class="sport-block card">
+    <div class="sport-block-head">
+      <label class="sport-select-label">Sport *
+        <select class="sport-select" required>
+          <option value="" disabled selected>Select a sport…</option>
+          {% for key, sp in sports.items() %}
+          <option value="{{ key }}" data-size="{{ sp.team_size }}">{{ sp.name }}{% if sp.team_size > 1 %} — team of {{ sp.team_size }}{% else %} — individual{% endif %}</option>
           {% endfor %}
         </select>
       </label>
-      <label>Category *
-        <select name="category[]" required>
-          <option value="" disabled selected>Select a category…</option>
-          {% for key, label in categories.items() %}
-          <option value="{{ key }}">{{ label }}</option>
-          {% endfor %}
-        </select>
+      <button type="button" class="remove-sport" title="Remove sport" aria-label="Remove sport"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    </div>
+    <p class="sport-hint"></p>
+    <div class="players"></div>
+    <button type="button" class="btn btn-small btn-outline add-player">+ Add Player</button>
+  </div>
+</template>
+
+<template id="player-row-template">
+  <div class="player-row">
+    <input type="hidden" name="player_sport[]" class="player-sport">
+    <div class="field-grid player-grid">
+      <label>Player Name *
+        <input type="text" name="player_name[]" maxlength="80" placeholder="Full name">
       </label>
-      <label>Participant 1 *
-        <input type="text" name="member1[]" maxlength="80" placeholder="Full name" required>
+      <label>Father's Name *
+        <input type="text" name="player_father[]" maxlength="80" placeholder="Father's name">
       </label>
-      <label>Participant 2 (optional)
-        <input type="text" name="member2[]" maxlength="80" placeholder="Full name">
+      <label>Date of Birth *
+        <input type="date" name="player_dob[]" max="2020-12-31" min="2000-01-01">
+      </label>
+      <label>CNIC / B-Form *
+        <input type="text" name="player_cnic[]" maxlength="20" class="cnic-input"
+               placeholder="35201-1234567-8" inputmode="numeric">
       </label>
     </div>
+    <button type="button" class="remove-player" title="Remove player" aria-label="Remove player"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
   </div>
 </template>
 
 <script>
 (function () {
-  const teamsBox = document.getElementById("teams");
-  const template = document.getElementById("team-row-template");
-  const totalEl = document.getElementById("total-fee");
+  var FEE_ONE = {{ info.fee_one }}, FEE_TWO = {{ info.fee_two }}, MAX_GAMES = 2;
+  var sportsBox = document.getElementById("sports");
+  var sportTpl = document.getElementById("sport-block-template");
+  var playerTpl = document.getElementById("player-row-template");
+  var totalEl = document.getElementById("total-fee");
+  var warnEl = document.getElementById("games-warning");
+  var form = document.querySelector(".reg-form");
 
-  function renumber() {
-    teamsBox.querySelectorAll(".team-label").forEach(function (el, i) {
-      el.textContent = "Team " + (i + 1);
+  function addPlayerRow(block) {
+    var row = playerTpl.content.cloneNode(true);
+    block.querySelector(".players").appendChild(row);
+    var added = block.querySelector(".players").lastElementChild;
+    syncSport(block);
+    added.querySelector(".remove-player").addEventListener("click", function () {
+      added.remove();
+      recompute();
     });
+    added.querySelectorAll("input").forEach(function (inp) {
+      inp.addEventListener("input", recompute);
+    });
+    return added;
   }
 
-  function updateTotal() {
-    let total = 0;
-    teamsBox.querySelectorAll(".challenge-select").forEach(function (sel) {
-      const opt = sel.selectedOptions[0];
-      if (opt && opt.dataset.fee) total += parseInt(opt.dataset.fee, 10);
+  function syncSport(block) {
+    var val = block.querySelector(".sport-select").value;
+    block.querySelectorAll(".player-sport").forEach(function (h) { h.value = val; });
+  }
+
+  function onSportChange(block) {
+    var sel = block.querySelector(".sport-select");
+    var opt = sel.selectedOptions[0];
+    var size = opt && opt.dataset.size ? parseInt(opt.dataset.size, 10) : 1;
+    block.querySelector(".sport-hint").textContent = opt && opt.value
+      ? (size > 1 ? "Recommended team size: " + size + " players." : "Individual event — 1 player.")
+      : "";
+    syncSport(block);
+    // Top up to the team size if the block has fewer (empty) rows.
+    var rows = block.querySelectorAll(".player-row").length;
+    for (var i = rows; i < size; i++) addPlayerRow(block);
+    recompute();
+  }
+
+  function addSportBlock() {
+    var frag = sportTpl.content.cloneNode(true);
+    sportsBox.appendChild(frag);
+    var block = sportsBox.lastElementChild;
+    block.querySelector(".sport-select").addEventListener("change", function () {
+      onSportChange(block);
+    });
+    block.querySelector(".add-player").addEventListener("click", function () {
+      addPlayerRow(block);
+    });
+    block.querySelector(".remove-sport").addEventListener("click", function () {
+      block.remove();
+      recompute();
+    });
+    addPlayerRow(block); // start with one row
+  }
+
+  function digits(s) { return (s || "").replace(/\D/g, ""); }
+
+  function recompute() {
+    // Build a map: person key -> set of sports (games).
+    var people = {};
+    document.querySelectorAll(".player-row").forEach(function (row) {
+      var name = row.querySelector('input[name="player_name[]"]').value.trim();
+      var cnic = digits(row.querySelector('input[name="player_cnic[]"]').value);
+      var sport = row.querySelector(".player-sport").value;
+      if (!name && !cnic) return;
+      if (!sport) return;
+      var key = cnic ? "c:" + cnic : "n:" + name.toLowerCase();
+      (people[key] = people[key] || {})[sport] = true;
+    });
+    var total = 0, over = false;
+    Object.keys(people).forEach(function (k) {
+      var n = Object.keys(people[k]).length;
+      if (n > MAX_GAMES) over = true;
+      total += n >= 2 ? FEE_TWO : FEE_ONE;
     });
     totalEl.textContent = "Rs " + total.toLocaleString();
+    warnEl.hidden = !over;
+    if (over) warnEl.textContent =
+      "A player is entered in more than " + MAX_GAMES + " games. Each player may play at most " + MAX_GAMES + ".";
   }
 
-  function addTeam() {
-    const row = template.content.cloneNode(true);
-    teamsBox.appendChild(row);
-    const added = teamsBox.lastElementChild;
-    added.querySelector(".remove-team").addEventListener("click", function () {
-      added.remove();
-      renumber();
-      updateTotal();
-    });
-    added.querySelector(".challenge-select").addEventListener("change", updateTotal);
-    renumber();
-  }
-
-  document.getElementById("add-team").addEventListener("click", addTeam);
-  addTeam(); // start with one team row
+  document.getElementById("add-sport").addEventListener("click", addSportBlock);
+  addSportBlock(); // start with one sport block
 
   // ---- Live email & phone validation -------------------------------------
-  const form = document.querySelector(".reg-form");
-  const emailEl = document.getElementById("email");
-  const emailMsg = document.getElementById("email-msg");
-  const phoneEl = document.getElementById("phone");
-  const phoneMsg = document.getElementById("phone-msg");
-
-  // Real domains we compare against to catch near-miss typos automatically.
-  const COMMON_DOMAINS = ["gmail.com", "googlemail.com", "yahoo.com",
-    "hotmail.com", "outlook.com", "live.com", "icloud.com", "aol.com",
-    "protonmail.com", "proton.me"];
-  // Real look-alike domains that must NEVER be "corrected" to a common one.
-  const KNOWN_VALID = new Set(COMMON_DOMAINS.concat([
-    "ymail.com", "email.com", "gmx.com", "rocketmail.com", "hotmail.co.uk",
-    "yahoo.co.uk", "me.com", "mac.com", "msn.com"]));
-
-  // Levenshtein edit distance — how many single-character edits apart two
-  // strings are. Used to spot a domain that's a tiny slip from a real one.
-  function editDistance(a, b) {
-    const m = a.length, n = b.length;
-    const dp = Array.from({length: m + 1}, function (_, i) {
-      return [i].concat(new Array(n).fill(0));
-    });
-    for (let j = 0; j <= n; j++) dp[0][j] = j;
-    for (let i = 1; i <= m; i++)
-      for (let j = 1; j <= n; j++)
-        dp[i][j] = a[i - 1] === b[j - 1] ? dp[i - 1][j - 1]
-          : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-    return dp[m][n];
-  }
-
-  // Return a suggested correct domain if `domain` is a likely typo, else null.
-  function suggestDomain(domain) {
-    if (KNOWN_VALID.has(domain)) return null;   // it's a real domain, leave it
-    let best = null, bestDist = 99;
-    COMMON_DOMAINS.forEach(function (good) {
-      const d = editDistance(domain, good);
-      if (d < bestDist) { bestDist = d; best = good; }
-    });
-    // 1–2 edits from a common domain = almost certainly a typo of it.
-    return (best && bestDist >= 1 && bestDist <= 2) ? best : null;
-  }
-
-  function setState(input, msgEl, ok, message) {
-    input.classList.toggle("field-invalid", ok === false);
-    input.classList.toggle("field-valid", ok === true);
-    msgEl.textContent = message || "";
-    msgEl.className = "field-msg" + (ok === false ? " msg-bad"
-                                     : ok === true ? " msg-good" : "");
-  }
-
-  function checkEmail(showEmpty) {
-    const v = emailEl.value.trim();
-    if (!v) { setState(emailEl, emailMsg, showEmpty ? false : null,
-                        showEmpty ? "Email is required." : ""); return !showEmpty ? true : false; }
-    // Format: something@something.tld (tld >= 2 letters)
-    if (!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(v)) {
-      setState(emailEl, emailMsg, false, "That doesn't look like a valid email address.");
-      return false;
-    }
-    const domain = v.split("@")[1].toLowerCase();
-    const suggestion = suggestDomain(domain);
-    if (suggestion) {
-      const fixed = v.replace(/@.*/, "@" + suggestion);
-      setState(emailEl, emailMsg, false, "Did you mean " + fixed + " ? (click to fix)");
-      emailMsg.dataset.suggest = fixed;
-      return false;
-    }
-    setState(emailEl, emailMsg, true, "Looks good ✓");
-    return true;
-  }
-
-  function checkPhone(showEmpty) {
-    const raw = phoneEl.value.trim();
-    if (!raw) { setState(phoneEl, phoneMsg, showEmpty ? false : null,
-                         showEmpty ? "Contact number is required." : ""); return false; }
-    const digits = raw.replace(/[^\d]/g, "");
-    // Pakistani mobile: 03XXXXXXXXX (11) or 92 3XXXXXXXXX (12) or 0092...(14)
-    let ok = false;
-    if (/^03\d{9}$/.test(digits)) ok = true;
-    else if (/^923\d{9}$/.test(digits)) ok = true;
-    else if (/^00923\d{9}$/.test(digits)) ok = true;
-    if (!ok) {
-      setState(phoneEl, phoneMsg, false,
-        "Enter a valid mobile number, e.g. 0300 1234567 or +92 300 1234567.");
-      return false;
-    }
-    setState(phoneEl, phoneMsg, true, "Looks good ✓");
-    return true;
-  }
-
-  emailEl.addEventListener("input", function () { checkEmail(false); });
-  emailEl.addEventListener("blur", function () { checkEmail(true); });
-  phoneEl.addEventListener("input", function () { checkPhone(false); });
-  phoneEl.addEventListener("blur", function () { checkPhone(true); });
-
-  // Click the "did you mean" suggestion to accept it.
-  emailMsg.addEventListener("click", function () {
-    if (emailMsg.dataset.suggest) {
-      emailEl.value = emailMsg.dataset.suggest;
-      emailMsg.dataset.suggest = "";
-      checkEmail(true);
-    }
-  });
-
-  form.addEventListener("submit", function (e) {
-    const okEmail = checkEmail(true);
-    const okPhone = checkPhone(true);
-    if (!okEmail || !okPhone) {
-      e.preventDefault();
-      (okPhone ? emailEl : phoneEl).focus();
-    }
-  });
+  var emailEl = document.getElementById("email"), emailMsg = document.getElementById("email-msg");
+  var phoneEl = document.getElementById("phone"), phoneMsg = document.getElementById("phone-msg");
+  var COMMON = ["gmail.com","googlemail.com","yahoo.com","hotmail.com","outlook.com","live.com","icloud.com","aol.com","protonmail.com","proton.me"];
+  var KNOWN = {}; COMMON.concat(["ymail.com","email.com","gmx.com","rocketmail.com","hotmail.co.uk","yahoo.co.uk","me.com","mac.com","msn.com"]).forEach(function(d){KNOWN[d]=1;});
+  function edit(a,b){var m=a.length,n=b.length,dp=[];for(var i=0;i<=m;i++){dp[i]=[i];for(var j=1;j<=n;j++)dp[i][j]=i===0?j:0;}for(i=1;i<=m;i++)for(j=1;j<=n;j++)dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);return dp[m][n];}
+  function suggestDomain(d){if(KNOWN[d])return null;var best=null,bd=99;COMMON.forEach(function(g){var e=edit(d,g);if(e<bd){bd=e;best=g;}});return(best&&bd>=1&&bd<=2)?best:null;}
+  function setState(inp,msg,ok,text){inp.classList.toggle("field-invalid",ok===false);inp.classList.toggle("field-valid",ok===true);msg.textContent=text||"";msg.className="field-msg"+(ok===false?" msg-bad":ok===true?" msg-good":"");}
+  function checkEmail(show){var v=emailEl.value.trim();if(!v){setState(emailEl,emailMsg,show?false:null,show?"Email is required.":"");return !show;}if(!/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/.test(v)){setState(emailEl,emailMsg,false,"That doesn't look like a valid email address.");return false;}var dom=v.split("@")[1].toLowerCase(),s=suggestDomain(dom);if(s){var fixed=v.replace(/@.*/,"@"+s);setState(emailEl,emailMsg,false,"Did you mean "+fixed+" ? (click to fix)");emailMsg.dataset.suggest=fixed;return false;}setState(emailEl,emailMsg,true,"Looks good ✓");return true;}
+  function checkPhone(show){var raw=phoneEl.value.trim();if(!raw){setState(phoneEl,phoneMsg,show?false:null,show?"Contact number is required.":"");return false;}var d=raw.replace(/\D/g,""),ok=/^03\d{9}$/.test(d)||/^923\d{9}$/.test(d)||/^00923\d{9}$/.test(d);if(!ok){setState(phoneEl,phoneMsg,false,"Enter a valid mobile number, e.g. 0300 1234567 or +92 300 1234567.");return false;}setState(phoneEl,phoneMsg,true,"Looks good ✓");return true;}
+  emailEl.addEventListener("input",function(){checkEmail(false);});
+  emailEl.addEventListener("blur",function(){checkEmail(true);});
+  phoneEl.addEventListener("input",function(){checkPhone(false);});
+  phoneEl.addEventListener("blur",function(){checkPhone(true);});
+  emailMsg.addEventListener("click",function(){if(emailMsg.dataset.suggest){emailEl.value=emailMsg.dataset.suggest;emailMsg.dataset.suggest="";checkEmail(true);}});
+  form.addEventListener("submit",function(e){var okE=checkEmail(true),okP=checkPhone(true);if(!okE||!okP){e.preventDefault();(okP?emailEl:phoneEl).focus();}});
 })();
 </script>
 

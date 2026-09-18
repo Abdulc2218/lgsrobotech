@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Organizer Dashboard — Robotech Challenge 6.0{% endblock %}
+{% block title %}Organizer Dashboard — LGS WT Sports Fest 2026{% endblock %}
 {% block content %}
 
 <section class="section admin-section">
@@ -26,8 +26,8 @@
       <span class="stat-label">Registrations</span>
     </div>
     <div class="card stat-card">
-      <span class="stat-num">{{ stats.teams }}</span>
-      <span class="stat-label">Teams</span>
+      <span class="stat-num">{{ stats.players }}</span>
+      <span class="stat-label">Player Entries</span>
     </div>
     <div class="card stat-card">
       <span class="stat-num">Rs {{ "{:,}".format(stats.fees_verified) }}</span>
@@ -40,17 +40,17 @@
   </div>
 
   <div class="card">
-    <h3>Teams per Challenge</h3>
+    <h3>Players per Sport</h3>
     <div class="challenge-count-grid">
-      {% for key, ch in challenges.items() %}
-      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-{{ ch.icon }}"/></svg> {{ ch.name }}: <strong>{{ challenge_counts[key] }}</strong></span>
+      {% for key, sp in sports.items() %}
+      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-{{ sp.icon }}"/></svg> {{ sp.name }}: <strong>{{ sport_counts[key] }}</strong></span>
       {% endfor %}
     </div>
   </div>
 
   <form method="get" action="{{ url_for('admin') }}" class="admin-search card">
     <input type="search" name="q" value="{{ q or '' }}"
-           placeholder="Search by WTR-ID, school, focal person, email, phone, or transaction ref…"
+           placeholder="Search by SF-ID, institution, focal person, email, phone, transaction ref, or player name…"
            autofocus>
     <button type="submit" class="btn btn-small">Search</button>
     {% if q %}<a href="{{ url_for('admin') }}" class="btn btn-small btn-outline">Clear</a>{% endif %}
@@ -70,7 +70,7 @@
   {% for reg in regs %}
   <div class="card reg-card status-{{ reg.status }}">
     <div class="reg-card-head">
-      <h3>WTR-{{ "%04d"|format(reg.id) }} — {{ reg.school }}</h3>
+      <h3>{{ reg_code(reg.id) }} — {{ reg.school }}</h3>
       <span class="badge badge-{{ reg.status }}">
         {% if reg.status == "verified" %}<svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Payment Verified
         {% elif reg.status == "rejected" %}<svg class="icon" aria-hidden="true"><use href="#i-x"/></svg> Rejected
@@ -89,22 +89,25 @@
           <tr><th>Transaction Ref</th><td><span class="txn-ref">{{ reg.txn_ref or "— not provided —" }}</span></td></tr>
         </table>
 
+        {% for e in entries_by_reg.get(reg.id, []) %}
         <div class="table-wrap">
+          <h4 class="status-sport"><svg class="icon" aria-hidden="true"><use href="#i-{{ sports[e.sport].icon }}"/></svg> {{ sports[e.sport].name }} ({{ e.players|length }})</h4>
           <table class="teams-table">
-            <thead><tr><th>#</th><th>Challenge</th><th>Category</th><th>Participants</th><th>Fee</th></tr></thead>
+            <thead><tr><th>#</th><th>Player</th><th>Father's Name</th><th>DOB</th><th>CNIC / B-Form</th></tr></thead>
             <tbody>
-              {% for t in teams_by_reg.get(reg.id, []) %}
+              {% for p in e.players %}
               <tr>
                 <td>{{ loop.index }}</td>
-                <td><svg class="icon" aria-hidden="true"><use href="#i-{{ challenges[t.challenge].icon }}"/></svg> {{ challenges[t.challenge].name }}</td>
-                <td>{{ categories[t.category] }}</td>
-                <td>{{ t.member1 }}{% if t.member2 %}, {{ t.member2 }}{% endif %}</td>
-                <td>Rs {{ "{:,}".format(t.fee) }}</td>
+                <td>{{ p.name }}</td>
+                <td>{{ p.father_name or "—" }}</td>
+                <td>{{ p.dob or "—" }}</td>
+                <td>{{ p.cnic or "—" }}</td>
               </tr>
               {% endfor %}
             </tbody>
           </table>
         </div>
+        {% endfor %}
       </div>
 
       <div class="receipt-col">
@@ -124,12 +127,12 @@
         <form method="post" action="{{ url_for('admin_set_status', reg_id=reg.id) }}" class="status-form">
           {% if reg.status != "verified" %}
           <button class="btn btn-small btn-verify" name="status" value="verified"
-                  onclick='return confirm({{ ("Are you sure you want to VERIFY the payment for WTR-%04d — %s?\n\nA confirmation email will be sent to %s."|format(reg.id, reg.school, reg.email))|tojson }})'>
+                  onclick='return confirm({{ ("Are you sure you want to VERIFY the payment for %s — %s?\n\nA confirmation email will be sent to %s."|format(reg_code(reg.id), reg.school, reg.email))|tojson }})'>
             <svg class="icon" aria-hidden="true"><use href="#i-check"/></svg> Verify Payment</button>
           {% endif %}
           {% if reg.status != "rejected" %}
           <button class="btn btn-small btn-reject" name="status" value="rejected"
-                  onclick='return confirm({{ ("Are you sure you want to REJECT registration WTR-%04d — %s?\n\nAn email will be sent to %s telling them it was not accepted and to contact you."|format(reg.id, reg.school, reg.email))|tojson }})'>
+                  onclick='return confirm({{ ("Are you sure you want to REJECT registration %s — %s?\n\nAn email will be sent to %s telling them it was not accepted and to contact you."|format(reg_code(reg.id), reg.school, reg.email))|tojson }})'>
             <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg> Reject</button>
           {% endif %}
           {% if reg.status != "pending" %}
@@ -144,7 +147,7 @@
         {% if reg.status == "verified" %}
         <form method="post" action="{{ url_for('admin_resend_email', reg_id=reg.id) }}" class="status-form">
           <button class="btn btn-small btn-outline"
-                  onclick='return confirm({{ ("Resend the confirmation email for WTR-%04d — %s to %s?"|format(reg.id, reg.school, reg.email))|tojson }})'>
+                  onclick='return confirm({{ ("Resend the confirmation email for %s — %s to %s?"|format(reg_code(reg.id), reg.school, reg.email))|tojson }})'>
             <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg> Resend Email</button>
         </form>
         {% endif %}
