@@ -14,8 +14,8 @@
   var WAVE_SPEED = 0.035;
   var WAVE_FREQUENCY = 3.0;
   var WAVE_AMPLITUDE = 0.3;
-  var WAVE_COLOR = [0.11, 0.45, 0.78];        // sporty electric blue
-  var BG_COLOR = [0.035, 0.086, 0.157];       // stadium navy
+  var WAVE_COLOR = [0.08, 0.62, 0.56];        // authentic teal
+  var BG_COLOR = [0.024, 0.125, 0.118];       // deep teal-black
   var COLOR_NUM = 4.0;
   var PIXEL_SIZE = 2.0;
   var MOUSE_RADIUS = 0.32;
