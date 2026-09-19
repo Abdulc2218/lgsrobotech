@@ -43,9 +43,10 @@
     <fieldset class="card">
       <legend>Sports &amp; Players</legend>
       <p class="hint">Add a block for each sport you're entering, then list that sport's
-        players with their details. A player may take part in a maximum of
-        <strong>2 games</strong> — enter the same CNIC / B-Form and we'll charge that
-        player once (Rs {{ "{:,}".format(info.fee_two) }} for 2 games).</p>
+        players with their details. If a player also plays a <strong>second sport</strong>,
+        just pick it in the “Also plays a 2nd sport?” box on their row — no need to retype
+        their details. Each player may play a maximum of <strong>2 games</strong>
+        (Rs {{ "{:,}".format(info.fee_one) }} for 1 game, Rs {{ "{:,}".format(info.fee_two) }} for 2).</p>
       <div id="sports"></div>
       <button type="button" class="btn btn-outline" id="add-sport">+ Add a Sport</button>
       <p class="field-msg msg-bad" id="games-warning" hidden></p>
@@ -132,6 +133,14 @@
         <input type="text" name="player_cnic[]" maxlength="20" class="cnic-input"
                placeholder="35201-1234567-8" inputmode="numeric">
       </label>
+      <label>Also plays a 2nd sport?
+        <select name="player_sport2[]" class="player-sport2">
+          <option value="">No — one sport only</option>
+          {% for key, sp in sports.items() %}
+          <option value="{{ key }}">Yes — also {{ sp.name }}</option>
+          {% endfor %}
+        </select>
+      </label>
     </div>
     <button type="button" class="remove-player" title="Remove player" aria-label="Remove player"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
   </div>
@@ -159,12 +168,21 @@
     added.querySelectorAll("input").forEach(function (inp) {
       inp.addEventListener("input", recompute);
     });
+    added.querySelector(".player-sport2").addEventListener("change", recompute);
+    syncSport(block); // hide the block's own sport from the "2nd sport" list
     return added;
   }
 
   function syncSport(block) {
     var val = block.querySelector(".sport-select").value;
     block.querySelectorAll(".player-sport").forEach(function (h) { h.value = val; });
+    // Don't let a player pick the same sport as their "2nd sport".
+    block.querySelectorAll(".player-sport2").forEach(function (sel) {
+      Array.prototype.forEach.call(sel.options, function (o) {
+        if (o.value) o.hidden = (o.value === val);
+      });
+      if (sel.value === val) sel.value = "";
+    });
   }
 
   function onSportChange(block) {
@@ -207,10 +225,13 @@
       var name = row.querySelector('input[name="player_name[]"]').value.trim();
       var cnic = digits(row.querySelector('input[name="player_cnic[]"]').value);
       var sport = row.querySelector(".player-sport").value;
+      var sport2 = row.querySelector(".player-sport2").value;
       if (!name && !cnic) return;
       if (!sport) return;
       var key = cnic ? "c:" + cnic : "n:" + name.toLowerCase();
-      (people[key] = people[key] || {})[sport] = true;
+      var set = (people[key] = people[key] || {});
+      set[sport] = true;
+      if (sport2 && sport2 !== sport) set[sport2] = true;
     });
     var total = 0, over = false;
     Object.keys(people).forEach(function (k) {
