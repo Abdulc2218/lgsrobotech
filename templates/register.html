@@ -48,8 +48,8 @@
         their details. Each player may play a maximum of <strong>2 games</strong>
         (Rs {{ "{:,}".format(info.fee_one) }} for 1 game, Rs {{ "{:,}".format(info.fee_two) }} for 2).</p>
       <div id="sports"></div>
-      <button type="button" class="btn btn-outline" id="add-sport">+ Add a Sport</button>
       <p class="field-msg msg-bad" id="games-warning" hidden></p>
+      <button type="button" class="btn btn-outline add-sport-btn" id="add-sport">+ Add a Sport</button>
     </fieldset>
 
     <div class="card total-card">
@@ -199,7 +199,17 @@
     recompute();
   }
 
+  var addSportBtn = document.getElementById("add-sport");
+
+  function updateAddSport() {
+    // A student may play at most MAX_GAMES sports, so allow at most that many
+    // sport blocks; hide the button once the limit is reached.
+    var count = sportsBox.querySelectorAll(".sport-block").length;
+    addSportBtn.hidden = count >= MAX_GAMES;
+  }
+
   function addSportBlock() {
+    if (sportsBox.querySelectorAll(".sport-block").length >= MAX_GAMES) return;
     var frag = sportTpl.content.cloneNode(true);
     sportsBox.appendChild(frag);
     var block = sportsBox.lastElementChild;
@@ -212,8 +222,10 @@
     block.querySelector(".remove-sport").addEventListener("click", function () {
       block.remove();
       recompute();
+      updateAddSport();
     });
     addPlayerRow(block); // start with one row
+    updateAddSport();
   }
 
   function digits(s) { return (s || "").replace(/\D/g, ""); }
