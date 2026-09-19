@@ -50,6 +50,9 @@
       <div id="sports"></div>
       <p class="field-msg msg-bad" id="games-warning" hidden></p>
       <button type="button" class="btn btn-outline add-sport-btn" id="add-sport">+ Add a Sport</button>
+      <p class="sport-limit-note" id="sport-limit-note" hidden>
+        Max limit of participation in sports per child reached — click ✕ to remove a sport.
+      </p>
     </fieldset>
 
     <div class="card total-card">
@@ -201,11 +204,13 @@
 
   var addSportBtn = document.getElementById("add-sport");
 
+  var limitNote = document.getElementById("sport-limit-note");
   function updateAddSport() {
     // A student may play at most MAX_GAMES sports, so allow at most that many
-    // sport blocks; hide the button once the limit is reached.
-    var count = sportsBox.querySelectorAll(".sport-block").length;
-    addSportBtn.hidden = count >= MAX_GAMES;
+    // sport blocks; hide the button (and show the note) once the limit is hit.
+    var atMax = sportsBox.querySelectorAll(".sport-block").length >= MAX_GAMES;
+    addSportBtn.hidden = atMax;
+    if (limitNote) limitNote.hidden = !atMax;
   }
 
   function addSportBlock() {
