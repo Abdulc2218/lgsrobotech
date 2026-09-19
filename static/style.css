@@ -1,16 +1,15 @@
-/* ===== LGS WT Sports Fest 2026 — teal & sidecar-yellow two-tone ===== */
+/* ===== LGS WT Sports Fest 2026 — deep ocean blue & ice cyan ===== */
 :root {
-  --bg: #06201e;            /* deep teal-black */
-  --bg-2: #0a2e2b;
-  --card: #0e3a35;
-  --card-border: #1e5852;
-  --text: #eafaf7;
-  --text-dim: #9cc4be;
-  /* variable names kept from earlier themes; values are now teal + yellow */
-  --purple: #14b8a6;        /* authentic teal (primary) */
-  --purple-bright: #2dd4bf; /* bright teal */
-  --orange: #f4cf5f;        /* sidecar yellow (accent) */
-  --green: #2dd4bf;         /* positive = teal (two-tone) */
+  --bg: #071c2b;            /* deep ocean-black */
+  --bg-2: #0c2c42;
+  --card: #103952;
+  --card-border: #1d5878;
+  --text: #eaf9ff;
+  --text-dim: #a4c6d6;
+  --purple: #0F4B70;        /* deep ocean blue (primary) */
+  --purple-bright: #C4F8FF; /* ice cyan */
+  --orange: #C4F8FF;        /* ice cyan (accent) */
+  --green: #7ee0f0;         /* positive = cyan */
   --danger: #ff6b6b;
   --radius: 14px;
 }
@@ -45,7 +44,7 @@ body::before {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(4, 22, 20, 0.32), rgba(4, 22, 20, 0.58));
+  background: linear-gradient(180deg, rgba(7, 28, 43, 0.32), rgba(7, 28, 43, 0.58));
 }
 
 h1, h2, h3, .nav-brand, .total, .reg-id {
@@ -74,7 +73,7 @@ a { color: var(--purple-bright); text-decoration: none; }
   position: sticky; top: 0; z-index: 50;
   display: flex; align-items: center; justify-content: space-between;
   padding: 0.8rem 5%;
-  background: rgba(4, 22, 20, 0.92);
+  background: rgba(7, 28, 43, 0.92);
   backdrop-filter: blur(8px);
   border-bottom: 3px solid transparent;
   border-image: linear-gradient(90deg, var(--purple), var(--orange), var(--green)) 1;
@@ -88,38 +87,38 @@ a { color: var(--purple-bright); text-decoration: none; }
 /* ===== Buttons ===== */
 .btn {
   display: inline-block;
-  background: linear-gradient(135deg, var(--purple), #0d9488);
+  background: linear-gradient(135deg, var(--purple), #0c3a58);
   color: #fff; font-weight: 700; font-family: "Rajdhani", sans-serif;
   padding: 0.65rem 1.5rem; border: none; border-radius: 999px;
   cursor: pointer; font-size: 1rem;
   transition: transform 0.15s, box-shadow 0.15s;
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(20, 184, 166, 0.45); }
+.btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(26, 110, 160, 0.45); }
 .btn-lg { padding: 0.9rem 2.2rem; font-size: 1.15rem; }
 .btn-small { padding: 0.4rem 1.1rem; font-size: 0.95rem; }
 .btn-outline {
   background: transparent; border: 2px solid var(--purple);
   color: var(--purple-bright);
 }
-.btn-outline:hover { background: rgba(20, 184, 166, 0.14); }
+.btn-outline:hover { background: rgba(26, 110, 160, 0.14); }
 
 /* ===== Hero ===== */
 .hero {
   padding: 5rem 5% 4rem;
   text-align: center;
   background:
-    radial-gradient(ellipse 55% 50% at 22% 0%, rgba(20, 184, 166, 0.28), transparent 60%),
-    radial-gradient(ellipse 55% 50% at 80% 10%, rgba(244, 207, 95, 0.22), transparent 60%),
-    linear-gradient(180deg, rgba(10, 46, 43, 0.82), rgba(4, 22, 20, 0.4));
+    radial-gradient(ellipse 55% 50% at 22% 0%, rgba(26, 110, 160, 0.28), transparent 60%),
+    radial-gradient(ellipse 55% 50% at 80% 10%, rgba(196, 248, 255, 0.22), transparent 60%),
+    linear-gradient(180deg, rgba(12, 44, 66, 0.82), rgba(7, 28, 43, 0.4));
   border-bottom: 2px solid var(--purple);
 }
-.hero-crest { height: 96px; width: auto; margin-bottom: 1.2rem; filter: drop-shadow(0 0 24px rgba(20, 184, 166, 0.45)); }
+.hero-crest { height: 96px; width: auto; margin-bottom: 1.2rem; filter: drop-shadow(0 0 24px rgba(26, 110, 160, 0.45)); }
 .hero-school { color: var(--text-dim); letter-spacing: 0.25em; font-size: 0.85rem; font-weight: 700; }
 .hero-invite { color: var(--orange); letter-spacing: 0.35em; margin-top: 1.4rem; font-weight: 700; }
 .hero-title {
   font-size: clamp(2.4rem, 7vw, 4.6rem);
   font-weight: 700; line-height: 1.05; margin: 0.6rem 0;
-  text-shadow: 0 0 40px rgba(20, 184, 166, 0.55);
+  text-shadow: 0 0 40px rgba(26, 110, 160, 0.55);
 }
 .hero-tagline { font-size: clamp(1.1rem, 3vw, 1.5rem); font-weight: 700; letter-spacing: 0.12em; margin-top: 0.4rem; }
 .hero-chips { margin-top: 1.6rem; display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; }
@@ -180,7 +179,7 @@ a { color: var(--purple-bright); text-decoration: none; }
 /* ===== CTA band ===== */
 .cta-band {
   text-align: center;
-  background: linear-gradient(135deg, rgba(20, 184, 166, 0.14), rgba(244, 207, 95, 0.10));
+  background: linear-gradient(135deg, rgba(26, 110, 160, 0.14), rgba(196, 248, 255, 0.10));
   border: 1px solid var(--card-border); border-radius: var(--radius);
   margin: 2rem auto 4rem; padding: 3rem 5%;
 }
@@ -311,8 +310,8 @@ input[type="file"]::file-selector-button {
 .search-summary strong { color: var(--purple-bright); }
 .flash { border-radius: var(--radius); padding: 0.9rem 1.3rem; margin-bottom: 1.2rem;
          font-weight: 600; display: flex; align-items: center; gap: 0.6rem; }
-.flash-ok { background: rgba(45, 212, 191, 0.1); border: 1px solid var(--green); color: var(--green); }
-.flash-warn { background: rgba(244, 207, 95, 0.1); border: 1px solid #f4cf5f; color: #f4cf5f; }
+.flash-ok { background: rgba(126, 224, 240, 0.1); border: 1px solid var(--green); color: var(--green); }
+.flash-warn { background: rgba(196, 248, 255, 0.1); border: 1px solid #C4F8FF; color: #C4F8FF; }
 .email-sent { color: var(--green); font-size: 0.9rem; margin-top: 0.6rem; }
 .txn-ref { font-family: "Oswald", monospace; letter-spacing: 0.05em;
            color: var(--purple-bright); background: var(--bg-2);
@@ -329,14 +328,14 @@ input[type="file"]::file-selector-button {
 .reg-card-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; }
 .reg-card-head h3 { margin-bottom: 0; }
 .badge { padding: 0.3rem 0.9rem; border-radius: 999px; font-weight: 700; font-size: 0.9rem; }
-.badge-pending { background: rgba(244, 207, 95, 0.15); color: #f4cf5f; border: 1px solid #f4cf5f; }
-.badge-verified { background: rgba(45, 212, 191, 0.15); color: var(--green); border: 1px solid var(--green); }
+.badge-pending { background: rgba(196, 248, 255, 0.15); color: #C4F8FF; border: 1px solid #C4F8FF; }
+.badge-verified { background: rgba(126, 224, 240, 0.15); color: var(--green); border: 1px solid var(--green); }
 .badge-rejected { background: rgba(255, 107, 129, 0.15); color: var(--danger); border: 1px solid var(--danger); }
 .reg-grid { display: grid; grid-template-columns: 1fr 240px; gap: 1.4rem; }
 @media (max-width: 760px) { .reg-grid { grid-template-columns: 1fr; } }
 .receipt-col h4 { font-family: "Oswald", sans-serif; margin-bottom: 0.6rem; color: var(--purple-bright); }
 .receipt-thumb { width: 100%; max-height: 260px; object-fit: contain; border: 1px solid var(--card-border); border-radius: 8px; background: var(--bg-2); }
-.missing-receipt { color: #f4cf5f; font-weight: 700; }
+.missing-receipt { color: #C4F8FF; font-weight: 700; }
 .status-form { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.8rem; }
 .btn-verify { background: linear-gradient(135deg, #5cb51e, var(--green)); }
 .btn-reject { background: linear-gradient(135deg, #d64560, var(--danger)); }
@@ -347,8 +346,8 @@ input[type="file"]::file-selector-button {
 
 /* ===== Status checker ===== */
 .status-notice { display: flex; align-items: flex-start; gap: 0.5rem;
-  background: rgba(244, 207, 95, 0.1); border: 1px solid #f4cf5f;
-  color: #f4cf5f; border-radius: var(--radius); padding: 0.8rem 1.1rem;
+  background: rgba(196, 248, 255, 0.1); border: 1px solid #C4F8FF;
+  color: #C4F8FF; border-radius: var(--radius); padding: 0.8rem 1.1rem;
   font-weight: 600; margin-bottom: 1rem; }
 .status-notice .icon { flex-shrink: 0; margin-top: 0.15rem; }
 .status-check-form { display: flex; gap: 1rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1.4rem; }
@@ -362,13 +361,13 @@ input[type="file"]::file-selector-button {
 .status-result p { color: var(--text-dim); max-width: 620px; margin: 0 auto 1rem; }
 .status-result.status-verified { border-color: var(--green); }
 .status-result.status-rejected { border-color: var(--danger); }
-.status-result.status-pending { border-color: #f4cf5f; }
+.status-result.status-pending { border-color: #C4F8FF; }
 .status-verified .status-icon { color: var(--green); }
 .status-rejected .status-icon { color: var(--danger); }
-.status-pending .status-icon { color: #f4cf5f; }
-.status-unknown .status-icon { color: #f4cf5f; }
+.status-pending .status-icon { color: #C4F8FF; }
+.status-unknown .status-icon { color: #C4F8FF; }
 .danger-text { color: var(--danger); }
-.pending-text { color: #f4cf5f; }
+.pending-text { color: #C4F8FF; }
 .status-result .teams-table { margin-top: 1rem; text-align: left; }
 
 /* ===== Footer ===== */
