@@ -227,6 +227,7 @@ input.field-valid { border-color: var(--green); }
 .player-row:last-of-type { border-bottom: none; }
 .player-grid { flex: 1; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 .add-player { margin-top: 0.2rem; }
+.add-sport-btn { display: block; margin-top: 1.2rem; }
 .status-sport { font-family: "Oswald", sans-serif; color: var(--purple-bright);
   font-size: 0.95rem; margin: 1rem 0 0.4rem; display: flex; align-items: center; gap: 0.4rem; }
 
