@@ -390,6 +390,16 @@ def register():
         if not players and not errors:
             errors.append("Please add at least one player to at least one sport.")
 
+        # Enforce each sport's team size (max players).
+        per_sport = {}
+        for p in players:
+            per_sport[p["sport"]] = per_sport.get(p["sport"], 0) + 1
+        for sp, n in per_sport.items():
+            limit = SPORTS[sp]["team_size"]
+            if n > limit:
+                errors.append(f"{SPORTS[sp]['name']}: a maximum of {limit} "
+                              f"player{'' if limit == 1 else 's'} is allowed.")
+
         # Max 2 games per player (identified by CNIC / B-Form).
         total, games_by_person = compute_fees(players)
         for p in players:
