@@ -159,7 +159,21 @@
   var warnEl = document.getElementById("games-warning");
   var form = document.querySelector(".reg-form");
 
+  function blockSize(block) {
+    var opt = block.querySelector(".sport-select").selectedOptions[0];
+    return (opt && opt.dataset.size) ? parseInt(opt.dataset.size, 10) : 1;
+  }
+
+  function updateAddPlayer(block) {
+    // Only allow up to the sport's team size; individual events (size 1) get
+    // no "Add Player" button at all.
+    var size = blockSize(block);
+    var count = block.querySelectorAll(".player-row").length;
+    block.querySelector(".add-player").hidden = count >= size;
+  }
+
   function addPlayerRow(block) {
+    if (block.querySelectorAll(".player-row").length >= blockSize(block)) return null;
     var row = playerTpl.content.cloneNode(true);
     block.querySelector(".players").appendChild(row);
     var added = block.querySelector(".players").lastElementChild;
@@ -167,12 +181,14 @@
     added.querySelector(".remove-player").addEventListener("click", function () {
       added.remove();
       recompute();
+      updateAddPlayer(block);
     });
     added.querySelectorAll("input").forEach(function (inp) {
       inp.addEventListener("input", recompute);
     });
     added.querySelector(".player-sport2").addEventListener("change", recompute);
     syncSport(block); // hide the block's own sport from the "2nd sport" list
+    updateAddPlayer(block);
     return added;
   }
 
@@ -193,12 +209,16 @@
     var opt = sel.selectedOptions[0];
     var size = opt && opt.dataset.size ? parseInt(opt.dataset.size, 10) : 1;
     block.querySelector(".sport-hint").textContent = opt && opt.value
-      ? (size > 1 ? "Recommended team size: " + size + " players." : "Individual event — 1 player.")
+      ? (size > 1 ? "Team of " + size + " players (maximum)."
+                  : "Individual event — 1 player, no teammates.")
       : "";
     syncSport(block);
-    // Top up to the team size if the block has fewer (empty) rows.
-    var rows = block.querySelectorAll(".player-row").length;
-    for (var i = rows; i < size; i++) addPlayerRow(block);
+    // Trim any rows beyond the new sport's team size, then top up to it.
+    var rows = block.querySelectorAll(".player-row");
+    for (var j = rows.length - 1; j >= size; j--) rows[j].remove();
+    var cur = block.querySelectorAll(".player-row").length;
+    for (var i = cur; i < size; i++) addPlayerRow(block);
+    updateAddPlayer(block);
     recompute();
   }
 
