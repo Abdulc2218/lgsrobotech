@@ -52,7 +52,7 @@ ADMIN_PASSWORD = _env("ADMIN_PASSWORD", "change-me")
 app.secret_key = _env("SECRET_KEY", "dev-only-secret")
 
 # Public URL of the live site (used in emails for the status-check link).
-SITE_URL = _env("SITE_URL", "https://lgsrobotech.vercel.app").rstrip("/")
+SITE_URL = _env("SITE_URL", "https://lgs-sportsfest.vercel.app").rstrip("/")
 
 # Email: Brevo HTTP API in production (BREVO_API_KEY), Gmail SMTP locally.
 BREVO_API_KEY = _env("BREVO_API_KEY")
@@ -349,21 +349,16 @@ def register():
                           "from your bank transfer (found on the receipt).")
 
         p_sport = form.getlist("player_sport[]")
-        p_sport2 = form.getlist("player_sport2[]")
         p_name = form.getlist("player_name[]")
         p_father = form.getlist("player_father[]")
         p_dob = form.getlist("player_dob[]")
         p_cnic = form.getlist("player_cnic[]")
 
-        # Pad the optional second-sport list so zip lines up if it's short.
-        while len(p_sport2) < len(p_sport):
-            p_sport2.append("")
-
         players = []
-        for i, (sp, sp2, nm, fa, db_, cn) in enumerate(
-                zip(p_sport, p_sport2, p_name, p_father, p_dob, p_cnic), start=1):
-            sp, sp2, nm, fa, db_, cn = (sp.strip(), sp2.strip(), nm.strip(),
-                                        fa.strip(), db_.strip(), cn.strip())
+        for i, (sp, nm, fa, db_, cn) in enumerate(
+                zip(p_sport, p_name, p_father, p_dob, p_cnic), start=1):
+            sp, nm, fa, db_, cn = (sp.strip(), nm.strip(), fa.strip(),
+                                   db_.strip(), cn.strip())
             if not (nm or fa or cn):
                 continue  # blank row — ignore
             if sp not in SPORTS:
@@ -382,10 +377,6 @@ def register():
                               f"(e.g. 35201-1234567-8).")
             players.append({"sport": sp, "name": nm, "father_name": fa,
                             "dob": db_, "cnic": cn})
-            # Optional second sport for the same player — reuse their details.
-            if sp2 and sp2 in SPORTS and sp2 != sp:
-                players.append({"sport": sp2, "name": nm, "father_name": fa,
-                                "dob": db_, "cnic": cn})
 
         if not players and not errors:
             errors.append("Please add at least one player to at least one sport.")
