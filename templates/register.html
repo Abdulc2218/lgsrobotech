@@ -45,11 +45,14 @@
 
     <fieldset class="card">
       <legend>Sports &amp; Players</legend>
+      <p class="hint">Add as many sports as your school is entering. Each player may play in
+        <strong>at most 2 sports</strong> — if a player is in two sports, enter the
+        <strong>same CNIC / B-Form</strong> for both.</p>
       <div id="sports"></div>
       <p class="field-msg msg-bad" id="games-warning" hidden></p>
       <button type="button" class="btn btn-outline add-sport-btn" id="add-sport">+ Add a Sport</button>
       <p class="sport-limit-note" id="sport-limit-note" hidden>
-        Max limit of participation in sports per child reached — click ✕ to remove a sport.
+        All {{ sports|length }} sports have been added — click ✕ on a sport to remove it.
       </p>
     </fieldset>
 
@@ -105,7 +108,7 @@
         <select class="sport-select" required>
           <option value="" disabled selected>Select a sport…</option>
           {% for key, sp in sports.items() %}
-          <option value="{{ key }}" data-size="{{ sp.team_size }}">{{ sp.name }}{% if sp.team_size > 1 %} — team of {{ sp.team_size }}{% else %} — individual{% endif %}</option>
+          <option value="{{ key }}" data-size="{{ sp.team_size }}" data-name="{{ sp.name }}">{{ sp.name }}{% if sp.team_size > 1 %} — team of {{ sp.team_size }}{% else %} — individual{% endif %}</option>
           {% endfor %}
         </select>
       </label>
@@ -136,15 +139,23 @@
       </label>
     </div>
     <button type="button" class="remove-player" title="Remove player" aria-label="Remove player"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+    <p class="player-msg" hidden></p>
   </div>
 </template>
 
 <script>
 (function () {
+  // MAX_GAMES is the limit per PLAYER. It has nothing to do with how many sports a
+  // school may enter — that is SPORT_COUNT (one block per sport).
   var FEE_ONE = {{ info.fee_one }}, FEE_TWO = {{ info.fee_two }}, MAX_GAMES = 2;
+  var SPORT_COUNT = {{ sports|length }};
   var sportsBox = document.getElementById("sports");
   var sportTpl = document.getElementById("sport-block-template");
   var playerTpl = document.getElementById("player-row-template");
+  var SPORT_NAMES = {};
+  sportTpl.content.querySelectorAll("option[data-name]").forEach(function (o) {
+    SPORT_NAMES[o.value] = o.dataset.name;
+  });
   var totalEl = document.getElementById("total-fee");
   var warnEl = document.getElementById("games-warning");
   var form = document.querySelector(".reg-form");
@@ -200,22 +211,36 @@
     var cur = block.querySelectorAll(".player-row").length;
     for (var i = cur; i < size; i++) addPlayerRow(block);
     updateAddPlayer(block);
+    refreshSportOptions();
     recompute();
+  }
+
+  function refreshSportOptions() {
+    // A school enters one team per sport, so grey out any sport that another
+    // block has already picked.
+    var selects = sportsBox.querySelectorAll(".sport-select");
+    var taken = {};
+    selects.forEach(function (s) { if (s.value) taken[s.value] = true; });
+    selects.forEach(function (s) {
+      Array.prototype.forEach.call(s.options, function (o) {
+        if (o.value) o.disabled = !!taken[o.value] && s.value !== o.value;
+      });
+    });
   }
 
   var addSportBtn = document.getElementById("add-sport");
 
   var limitNote = document.getElementById("sport-limit-note");
   function updateAddSport() {
-    // A student may play at most MAX_GAMES sports, so allow at most that many
-    // sport blocks; hide the button (and show the note) once the limit is hit.
-    var atMax = sportsBox.querySelectorAll(".sport-block").length >= MAX_GAMES;
-    addSportBtn.hidden = atMax;
-    if (limitNote) limitNote.hidden = !atMax;
+    // A school may enter every sport, once each — so the only limit on sport
+    // blocks is the number of sports there are.
+    var allAdded = sportsBox.querySelectorAll(".sport-block").length >= SPORT_COUNT;
+    addSportBtn.hidden = allAdded;
+    if (limitNote) limitNote.hidden = !allAdded;
   }
 
   function addSportBlock() {
-    if (sportsBox.querySelectorAll(".sport-block").length >= MAX_GAMES) return;
+    if (sportsBox.querySelectorAll(".sport-block").length >= SPORT_COUNT) return;
     var frag = sportTpl.content.cloneNode(true);
     sportsBox.appendChild(frag);
     var block = sportsBox.lastElementChild;
@@ -227,37 +252,70 @@
     });
     block.querySelector(".remove-sport").addEventListener("click", function () {
       block.remove();
+      refreshSportOptions();
       recompute();
       updateAddSport();
     });
     addPlayerRow(block); // start with one row
+    refreshSportOptions();
     updateAddSport();
   }
 
   function digits(s) { return (s || "").replace(/\D/g, ""); }
 
+  function setRowBlocked(row, msg) {
+    // Flag a row whose player is already in the maximum number of sports. The
+    // custom validity on the CNIC field also stops the form from submitting.
+    var msgEl = row.querySelector(".player-msg");
+    row.classList.toggle("row-blocked", !!msg);
+    msgEl.textContent = msg || "";
+    msgEl.hidden = !msg;
+    row.querySelector('input[name="player_cnic[]"]').setCustomValidity(msg || "");
+  }
+
+  function sportList(keys) {
+    return keys.map(function (k) { return SPORT_NAMES[k] || k; }).join(" & ");
+  }
+
   function recompute() {
-    // Build a map: person key -> set of sports (games).
+    // Build a map: person key -> the sports (games) they are in, in the order the
+    // sport blocks appear on the page, plus every row they occupy.
     var people = {};
-    document.querySelectorAll(".player-row").forEach(function (row) {
+    var rows = document.querySelectorAll(".player-row");
+    rows.forEach(function (row) {
+      setRowBlocked(row, "");
       var name = row.querySelector('input[name="player_name[]"]').value.trim();
       var cnic = digits(row.querySelector('input[name="player_cnic[]"]').value);
       var sport = row.querySelector(".player-sport").value;
       if (!name && !cnic) return;
       if (!sport) return;
       var key = cnic ? "c:" + cnic : "n:" + name.toLowerCase();
-      (people[key] = people[key] || {})[sport] = true;
+      var p = people[key] = people[key] || { name: name, sports: [], rows: [] };
+      if (!p.name) p.name = name;
+      if (p.sports.indexOf(sport) === -1) p.sports.push(sport);
+      p.rows.push({ row: row, sport: sport });
     });
-    var total = 0, over = false;
+    var total = 0, offenders = [];
     Object.keys(people).forEach(function (k) {
-      var n = Object.keys(people[k]).length;
-      if (n > MAX_GAMES) over = true;
-      total += n >= 2 ? FEE_TWO : FEE_ONE;
+      var p = people[k];
+      total += p.sports.length >= 2 ? FEE_TWO : FEE_ONE;
+      if (p.sports.length <= MAX_GAMES) return;
+      // First come, first served: the first MAX_GAMES sports stay; any further
+      // sport for the same player is refused.
+      var kept = p.sports.slice(0, MAX_GAMES);
+      offenders.push(p.name || "A player");
+      p.rows.forEach(function (r) {
+        if (kept.indexOf(r.sport) === -1) {
+          setRowBlocked(r.row, "Already entered in " + sportList(kept) + " — a player can " +
+            "play at most " + MAX_GAMES + " sports. Remove this entry or use a different player.");
+        }
+      });
     });
     totalEl.textContent = "Rs " + total.toLocaleString();
-    warnEl.hidden = !over;
-    if (over) warnEl.textContent =
-      "A player is entered in more than " + MAX_GAMES + " games. Each player may play at most " + MAX_GAMES + ".";
+    warnEl.hidden = offenders.length === 0;
+    if (offenders.length) warnEl.textContent =
+      offenders.join(", ") + (offenders.length > 1 ? " are" : " is") + " entered in more than " +
+      MAX_GAMES + " sports. Each player may play at most " + MAX_GAMES + " — remove the extra entries below.";
   }
 
   document.getElementById("add-sport").addEventListener("click", addSportBlock);
