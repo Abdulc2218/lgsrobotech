@@ -87,7 +87,7 @@ SPORTS = {
     "volleyball": {
         "name": "Volleyball",
         "team_size": 6,
-        "icon": "ball",
+        "icon": "volleyball",
         "desc": "6-a-side. Send the ball over the net within 3 touches; a point is "
                 "scored on every rally.",
         "rules": ["Each team has 6 players", "Up to 3 touches before returning the ball",
@@ -97,7 +97,7 @@ SPORTS = {
     "throwball": {
         "name": "Throwball",
         "team_size": 7,
-        "icon": "ball",
+        "icon": "throwball",
         "desc": "7-a-side. Throw the ball over the net into the opponent's court using "
                 "your hands.",
         "rules": ["Each team has 7 players", "Throw with hands; brief catch & hold allowed",
@@ -117,7 +117,7 @@ SPORTS = {
     "dodgeball": {
         "name": "Dodgeball",
         "team_size": 6,
-        "icon": "target",
+        "icon": "dodgeball",
         "desc": "6-a-side. Eliminate opponents by hitting them (below the shoulders) or "
                 "catching their throw.",
         "rules": ["Each team has 6 players", "Soft rubber balls; hit below the shoulders",
@@ -127,7 +127,7 @@ SPORTS = {
     "tug-of-war": {
         "name": "Tug of War",
         "team_size": 8,
-        "icon": "link",
+        "icon": "tug",
         "desc": "Two teams pull the rope from opposite ends — drag the opposing team "
                 "across the line.",
         "rules": ["Two teams pull from opposite ends", "Pull the opponents across the line",
@@ -136,7 +136,7 @@ SPORTS = {
     "arm-wrestling": {
         "name": "Arm Wrestling",
         "team_size": 1,
-        "icon": "activity",
+        "icon": "arm",
         "desc": "One-on-one. Pin your opponent's hand to the pad, elbows staying on the "
                 "designated pads.",
         "rules": ["Individual event (1 player)", "Pin the opponent's hand to the pad",
@@ -155,7 +155,7 @@ SPORTS = {
     "table-tennis-doubles": {
         "name": "Table Tennis — Doubles",
         "team_size": 2,
-        "icon": "ping-pong",
+        "icon": "table-tennis-double",
         "desc": "2-a-side. Partners hit alternately, serving diagonally in the correct "
                 "rotation.",
         "rules": ["Each team has 2 players", "Serve diagonally into the service court",
