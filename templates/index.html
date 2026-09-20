@@ -3,57 +3,88 @@
 
 <section class="hero">
   <div class="hero-inner">
-    <img class="hero-crest" src="{{ url_for('static', filename='lgs-logo.png') }}"
-         alt="Lahore Grammar School crest">
-    <p class="hero-school">LAHORE GRAMMAR SCHOOL (LANDMARK PROJECT) — WAPDA TOWN</p>
-    <p class="hero-invite">YOU ARE INVITED TO THE</p>
-    <h1 class="hero-title">LGS WT<br>SPORTS FEST <span class="accent">2026</span></h1>
-    <p class="hero-tagline">INTER-SCHOOL <span class="green">SPORTS FEST</span> 2026</p>
-    <div class="hero-chips">
-      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg> {{ info.date }}</span>
-      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg> {{ info.venue }}</span>
-      <span class="chip"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg> 8 Sports</span>
+    <div class="hero-grid">
+      <div class="hero-main">
+        <img class="hero-crest" src="{{ url_for('static', filename='lgs-logo.png') }}"
+             alt="Lahore Grammar School crest">
+        <p class="hero-kicker">LGS Wapda Town — Punjab Campus · Lahore</p>
+        <h1 class="hero-title">Sports<br>Fest <span class="year">'26</span></h1>
+        <p class="hero-tagline">Inter-School Sports Festival</p>
+        <div class="hero-actions">
+          <a href="{{ url_for('register') }}" class="btn btn-lg">Register your school</a>
+          <a href="#sports" class="btn btn-lg btn-outline">Explore the sports</a>
+        </div>
+        <p class="hero-deadline"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg>
+          Registration closes <strong>{{ info.deadline }}</strong></p>
+      </div>
+
+      <aside class="hero-meta" aria-label="Event at a glance">
+        <div class="lanes"></div>
+        <div class="meta-item">
+          <span class="meta-label">Date</span>
+          <span class="meta-value big">26 Sep<br>2026</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Venue</span>
+          <span class="meta-value">LGS Wapda Town<br>Punjab Campus</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Sports</span>
+          <span class="meta-value big">08</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Open to</span>
+          <span class="meta-value">All schools<br>Boys &amp; girls</span>
+        </div>
+      </aside>
     </div>
-    <div class="hero-actions">
-      <a href="{{ url_for('register') }}" class="btn btn-lg">Register Your School</a>
-      <a href="#sports" class="btn btn-lg btn-outline">Explore Sports</a>
-    </div>
-    <p class="hero-deadline"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg> Registration deadline: <strong>{{ info.deadline }}</strong></p>
   </div>
 </section>
 
 <section class="section" id="details">
-  <h2>Event <span class="accent">Details</span></h2>
+  <div class="section-head">
+    <span class="section-index">01</span>
+    <h2>Event <span class="accent">Details</span></h2>
+  </div>
   <div class="cards-4">
-    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div><h3>Date</h3><p>{{ info.date }}</p></div>
-    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg></div><h3>Venue</h3><p>{{ info.venue }}</p></div>
-    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></div><h3>Open To</h3><p>All schools — male &amp; female participants</p></div>
-    <div class="card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg></div><h3>Registration Deadline</h3><p>{{ info.deadline }}</p></div>
+    <div class="card detail-card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-calendar"/></svg></div><h3>Date</h3><p>{{ info.date }}</p></div>
+    <div class="card detail-card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-map-pin"/></svg></div><h3>Venue</h3><p>{{ info.venue }}</p></div>
+    <div class="card detail-card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg></div><h3>Open To</h3><p>All schools — male &amp; female participants</p></div>
+    <div class="card detail-card"><div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-hourglass"/></svg></div><h3>Deadline</h3><p>{{ info.deadline }}</p></div>
   </div>
 </section>
 
 <section class="section" id="fees">
-  <h2>Participation <span class="accent">Fee</span></h2>
+  <div class="section-head">
+    <span class="section-index">02</span>
+    <h2>Participation <span class="accent">Fee</span></h2>
+  </div>
   <p class="section-sub">The fee is charged <strong>per player</strong>, based on how many
     games that player takes part in. Each player may play a maximum of 2 games.</p>
-  <div class="cards-2">
-    <div class="card cat-card">
-      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg></div>
-      <h3>1 Game</h3>
-      <p class="cat-grades">Rs {{ "{:,}".format(info.fee_one) }} / player</p>
+  <div class="fee-grid">
+    <div class="fee-card">
+      <div class="fee-head">
+        <span class="fee-tier">1 Game</span>
+      </div>
+      <div class="fee-amount"><span class="num">Rs {{ "{:,}".format(info.fee_one) }}</span> <span class="per">/ player</span></div>
       <p>For a player taking part in a single game.</p>
     </div>
-    <div class="card cat-card">
-      <div class="card-icon"><svg class="icon" aria-hidden="true"><use href="#i-award"/></svg></div>
-      <h3>2 Games</h3>
-      <p class="cat-grades">Rs {{ "{:,}".format(info.fee_two) }} / player</p>
-      <p>For a player taking part in two games (the maximum allowed).</p>
+    <div class="fee-card featured">
+      <div class="fee-head">
+        <span class="fee-tier">2 Games</span>
+        <span class="fee-tag">Max allowed</span>
+      </div>
+      <div class="fee-amount"><span class="num">Rs {{ "{:,}".format(info.fee_two) }}</span> <span class="per">/ player</span></div>
+      <p>For a player taking part in two games — the maximum a single player may enter.</p>
     </div>
   </div>
 </section>
 
 <section class="section" id="sports">
-  <h2>The <span class="accent">8 Sports</span></h2>
+  <div class="section-head">
+    <span class="section-index">03</span>
+    <h2>The <span class="accent">8 Sports</span></h2>
+  </div>
   <p class="section-sub">Register a team for each sport your school is entering.
     A player can take part in up to 2 games.</p>
   <div class="challenge-grid">
@@ -77,7 +108,10 @@
 </section>
 
 <section class="section" id="rules">
-  <h2>Code of <span class="accent">Conduct</span></h2>
+  <div class="section-head">
+    <span class="section-index">04</span>
+    <h2>Code of <span class="accent">Conduct</span></h2>
+  </div>
   <div class="cards-2">
     <div class="card">
       <h3>Sportsmanship</h3>
@@ -102,7 +136,7 @@
   </div>
 </section>
 
-<section class="section cta-band">
+<section class="cta-band">
   <h2>Ready to <span class="green">compete</span>?</h2>
   <p>Register your teams before {{ info.deadline }} — spots fill fast.</p>
   <a href="{{ url_for('register') }}" class="btn btn-lg">Register Now</a>

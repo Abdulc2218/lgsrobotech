@@ -16,15 +16,15 @@
   <nav class="nav">
     <a href="{{ url_for('index') }}" class="nav-brand">
       <img class="nav-crest" src="{{ url_for('static', filename='lgs-logo.png') }}" alt="LGS logo">
-      SPORTS FEST <span class="accent">2026</span>
+      SPORTS FEST <span class="accent">'26</span>
     </a>
     <div class="nav-links">
       <a href="{{ url_for('index') }}#details">Details</a>
       <a href="{{ url_for('index') }}#sports">Sports</a>
       <a href="{{ url_for('index') }}#rules">Rules</a>
-      <a href="{{ url_for('check_status') }}">Check Status</a>
-      <a href="{{ url_for('register') }}" class="btn btn-small">Register Now</a>
+      <a href="{{ url_for('check_status') }}">Status</a>
     </div>
+    <a href="{{ url_for('register') }}" class="btn btn-small nav-cta">Register</a>
   </nav>
 
   <main>
