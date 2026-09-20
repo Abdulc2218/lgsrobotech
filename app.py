@@ -322,6 +322,26 @@ def compute_fees(players):
     return total, games_by_person
 
 
+def sport_names(sport_keys):
+    """'Volleyball & Futsal' — sport display names in SPORTS order."""
+    return " & ".join(SPORTS[k]["name"] for k in SPORTS if k in sport_keys)
+
+
+def earlier_games_by_person(db, keys):
+    """Sports each person (by CNIC digits) is already entered in through
+    registrations received earlier. Rejected registrations don't count."""
+    rows = db.execute(
+        "SELECT p.sport, p.cnic FROM players p "
+        "JOIN registrations r ON r.id = p.registration_id "
+        "WHERE r.status != 'rejected'").fetchall()
+    earlier = {}
+    for row in rows:
+        key = re.sub(r"\D", "", row["cnic"] or "")
+        if key in keys:
+            earlier.setdefault(key, set()).add(row["sport"])
+    return earlier
+
+
 @app.route("/register", methods=["GET", "POST"])
 def register():
     errors = []
@@ -391,14 +411,29 @@ def register():
                 errors.append(f"{SPORTS[sp]['name']}: a maximum of {limit} "
                               f"player{'' if limit == 1 else 's'} is allowed.")
 
-        # Max 2 games per player (identified by CNIC / B-Form).
+        # Max 2 games per player (identified by CNIC / B-Form) — within this
+        # submission and together with registrations already received.
         total, games_by_person = compute_fees(players)
+        name_by_key = {}
         for p in players:
-            if len(games_by_person.get(player_key(p), set())) > MAX_GAMES_PER_PLAYER:
-                errors.append(f"{p['name']} is entered in more than "
-                              f"{MAX_GAMES_PER_PLAYER} games — each player may play "
-                              f"at most {MAX_GAMES_PER_PLAYER}.")
-                break
+            name_by_key.setdefault(player_key(p), p["name"])
+        for key, games in games_by_person.items():
+            if len(games) > MAX_GAMES_PER_PLAYER:
+                errors.append(f"{name_by_key[key]} is entered in {len(games)} sports "
+                              f"({sport_names(games)}) — each player may play at "
+                              f"most {MAX_GAMES_PER_PLAYER}.")
+        cnic_keys = {k for k in games_by_person if k.isdigit()}
+        if cnic_keys:
+            earlier = earlier_games_by_person(get_db(), cnic_keys)
+            for key, old in earlier.items():
+                games = games_by_person[key]
+                if (len(games) <= MAX_GAMES_PER_PLAYER
+                        and len(old | games) > MAX_GAMES_PER_PLAYER):
+                    errors.append(f"{name_by_key[key]} is already registered for "
+                                  f"{sport_names(old)} in an earlier registration — "
+                                  f"adding {sport_names(games - old)} would exceed "
+                                  f"the limit of {MAX_GAMES_PER_PLAYER} sports per "
+                                  f"player.")
 
         receipt = request.files.get("receipt")
         receipt_ext = None
