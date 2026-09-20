@@ -219,9 +219,9 @@ button[type="submit"].btn-block::after { content: ""; }
 
 /* ===== Card grids ===== */
 .cards-4, .cards-2, .challenge-grid { display: grid; gap: 1rem; }
-.cards-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.cards-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-.challenge-grid { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+.cards-4 { grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); }
+.cards-2 { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.challenge-grid { grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
 
 .card {
   background: var(--card); border: 1px solid var(--card-border);
@@ -245,7 +245,7 @@ button[type="submit"].btn-block::after { content: ""; }
 .detail-card p { color: var(--text); font-weight: 600; font-size: 1.05rem; }
 
 /* ===== Fee / pricing ===== */
-.fee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+.fee-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 1rem; }
 .fee-card {
   position: relative; overflow: hidden; display: flex; flex-direction: column;
   padding: 0; border: 1px solid var(--card-border); border-radius: var(--radius-lg);
@@ -314,19 +314,29 @@ button[type="submit"].btn-block::after { content: ""; }
 .reg-form fieldset {
   border: 1px solid var(--card-border); border-radius: var(--radius-lg);
   margin-bottom: 1.4rem; padding: 1.5rem;
+  /* Browsers give <fieldset> a default min-inline-size of min-content, so it
+     refuses to shrink below its widest child (the sport <select>, which is as
+     wide as its longest option). On a phone that pushes the whole page wider
+     than the screen. Overriding it lets the fieldset behave like a div. */
+  min-width: 0;
 }
 .reg-form legend {
   font-family: "Oswald", sans-serif; font-weight: 600; text-transform: uppercase;
   letter-spacing: 0.06em; padding: 0 0.6rem; color: var(--purple-bright); font-size: 1.05rem;
 }
-.field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+/* min() keeps the track from demanding 240px when the screen has less to give. */
+.field-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 1rem; }
 label { display: flex; flex-direction: column; gap: 0.4rem; font-weight: 600; color: var(--text-dim);
-  font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.03em; }
+  font-size: 0.92rem; text-transform: uppercase; letter-spacing: 0.03em;
+  min-width: 0; }   /* grid/flex children default to min-width:auto and won't shrink */
 input, select {
   background: var(--bg-2); color: var(--text);
   border: 1px solid var(--card-border); border-radius: var(--radius);
   padding: 0.7rem 0.85rem; font-family: "Rajdhani", sans-serif; font-size: 1rem; font-weight: 500;
   text-transform: none; letter-spacing: normal;
+  /* A <select> is otherwise as wide as its longest option, and a date input has
+     its own intrinsic width on iOS — both must be allowed to shrink. */
+  min-width: 0; max-width: 100%; width: 100%;
 }
 input::placeholder { color: var(--text-faint); }
 input:focus, select:focus { outline: none; border-color: var(--purple-bright);
@@ -343,7 +353,7 @@ button[type="submit"].btn { justify-content: center; width: 100%; }
 /* ===== Sport-centric registration blocks ===== */
 .sport-block { margin-bottom: 1.2rem; background: var(--bg-2); }
 .sport-block-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 0.8rem; margin-bottom: 0.4rem; }
-.sport-select-label { flex: 1; }
+.sport-select-label { flex: 1; min-width: 0; }
 .sport-hint { color: var(--purple-bright); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.8rem; min-height: 1em; text-transform: none; }
 .remove-sport, .remove-player {
   background: transparent; border: 1px solid var(--card-border); color: var(--danger);
@@ -354,7 +364,7 @@ button[type="submit"].btn { justify-content: center; width: 100%; }
 .player-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.8rem;
   padding-bottom: 0.8rem; border-bottom: 1px dashed var(--line); }
 .player-row:last-of-type { border-bottom: none; }
-.player-grid { flex: 1; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.player-grid { flex: 1; min-width: 0; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); }
 .add-player { margin-top: 0.2rem; }
 .add-sport-btn { margin-top: 1.2rem; }
 .sport-limit-note { margin-top: 0.7rem; color: var(--text-faint); font-size: 0.82rem; font-style: italic; }
@@ -548,7 +558,7 @@ input[type="file"]::file-selector-button {
 /* ===== Footer ===== */
 .footer { border-top: 1px solid var(--line); background: rgba(7, 28, 43, 0.6); padding: 3rem clamp(1.1rem, 5vw, 3.2rem) 1.5rem; }
 .footer-grid { max-width: var(--maxw); margin: 0 auto; display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 2rem; }
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 2rem; }
 .footer-crest { height: 56px; width: auto; margin-bottom: 0.8rem; }
 .footer h4 { font-family: "Oswald", sans-serif; margin-bottom: 0.6rem; color: var(--purple-bright);
   text-transform: uppercase; letter-spacing: 0.05em; font-size: 0.95rem; }
