@@ -351,13 +351,19 @@ button[type="submit"].btn { justify-content: center; width: 100%; }
   display: inline-flex; align-items: center; justify-content: center; transition: background 0.15s, border-color 0.15s;
 }
 .remove-sport:hover, .remove-player:hover { background: rgba(255, 107, 129, 0.12); border-color: var(--danger); }
-.player-row { display: flex; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.8rem;
+.player-row { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: flex-start; margin-bottom: 0.8rem;
   padding-bottom: 0.8rem; border-bottom: 1px dashed var(--line); }
 .player-row:last-of-type { border-bottom: none; }
 .player-grid { flex: 1; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 .add-player { margin-top: 0.2rem; }
 .add-sport-btn { margin-top: 1.2rem; }
 .sport-limit-note { margin-top: 0.7rem; color: var(--text-faint); font-size: 0.82rem; font-style: italic; }
+/* .btn etc. set their own display, which would otherwise beat the browser's
+   default [hidden] rule and leave "hidden" buttons visible. */
+[hidden] { display: none !important; }
+/* A player who is already in the maximum number of sports */
+.player-msg { flex: 0 0 100%; margin: 0; color: var(--danger); font-size: 0.85rem; font-weight: 600; }
+.player-row.row-blocked .player-grid input { border-color: var(--danger); }
 .status-sport { font-family: "Oswald", sans-serif; text-transform: uppercase; color: var(--purple-bright);
   font-size: 1rem; margin: 1.2rem 0 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
 
