@@ -364,6 +364,43 @@ button[type="submit"].btn { justify-content: center; width: 100%; }
 /* A player who is already in the maximum number of sports */
 .player-msg { flex: 0 0 100%; margin: 0; color: var(--danger); font-size: 0.85rem; font-weight: 600; }
 .player-row.row-blocked .player-grid input { border-color: var(--danger); }
+/* ===== Downloadable event-day forms (home page + registration) ===== */
+.forms-download {
+  background: var(--card); border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg); padding: clamp(1.1rem, 3vw, 1.6rem);
+  margin-top: 1.4rem;
+}
+.forms-download h3 { display: flex; align-items: center; gap: 0.55rem; margin-bottom: 0.5rem; }
+.forms-lead { color: var(--text-dim); font-size: 0.95rem; margin-bottom: 1rem; }
+.forms-list { display: grid; gap: 0.7rem; }
+.form-card {
+  display: flex; align-items: center; gap: 0.9rem; text-decoration: none;
+  background: var(--card-2); border: 1px solid var(--card-border);
+  border-radius: var(--radius); padding: 0.85rem 1rem; color: var(--text);
+  transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.form-card:hover, .form-card:focus-visible {
+  border-color: var(--purple-bright); background: rgba(196, 248, 255, 0.07);
+  transform: translateY(-1px);
+}
+.form-card::after { content: ""; }
+.form-icon { color: var(--purple-bright); flex-shrink: 0; display: inline-flex; }
+.form-icon .icon { width: 1.6rem; height: 1.6rem; }
+.form-text { display: flex; flex-direction: column; gap: 0.15rem; flex: 1; min-width: 0; }
+.form-text strong { font-family: "Oswald", sans-serif; text-transform: uppercase;
+  letter-spacing: 0.02em; font-size: 0.95rem; font-weight: 600; }
+.form-text small { color: var(--text-dim); font-size: 0.85rem; }
+.form-dl {
+  display: inline-flex; align-items: center; gap: 0.35rem; flex-shrink: 0;
+  font-family: "Oswald", sans-serif; font-size: 0.78rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.06em; color: var(--purple-bright);
+  border: 1px solid var(--card-border); border-radius: var(--radius);
+  padding: 0.35rem 0.7rem;
+}
+.form-card:hover .form-dl { border-color: var(--purple-bright); }
+/* On the registration page the block sits inside a fieldset already carded. */
+.form-section .forms-download { margin-bottom: 1.4rem; }
+
 .status-sport { font-family: "Oswald", sans-serif; text-transform: uppercase; color: var(--purple-bright);
   font-size: 1rem; margin: 1.2rem 0 0.4rem; display: flex; align-items: center; gap: 0.5rem; }
 
@@ -558,6 +595,11 @@ input[type="file"]::file-selector-button {
   .status-check-form { flex-direction: column; align-items: stretch; }
   .status-check-form .btn { width: 100%; justify-content: center; }
   .player-row { gap: 0.5rem; }
+
+  /* Forms: stack the label above the download chip so nothing is squeezed */
+  .form-card { flex-wrap: wrap; gap: 0.6rem 0.8rem; }
+  .form-text { flex: 1 1 60%; }
+  .form-dl { margin-left: auto; }
 }
 
 @media (max-width: 380px) {
