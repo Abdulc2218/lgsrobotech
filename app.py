@@ -170,8 +170,10 @@ EVENT_INFO = {
     "date": "Saturday, 26 September 2026",
     "venue": "LGS Wapda Town — Punjab Campus, Lahore",
     "deadline": "24 September 2026",
-    "email": "lgswtrobotech@gmail.com",
-    "instagram": "",
+    # No public email address is shown on the site — schools contact the two
+    # numbers below or Instagram. (The address outgoing mail is *sent from* is
+    # a separate setting, the SENDER_EMAIL environment variable.)
+    "instagram": "lgswtsportsfest",
     "bank": "Askari Bank — Account No. 03201650001721",
     "contact_person": "Muhammad Usman (0323 8409150)",
     "contact_info": "Abdul Qayyum (0321 4091541)",
@@ -764,7 +766,6 @@ reason and how to correct it:
 
   {EVENT_INFO['contact_person']}
   {EVENT_INFO['contact_info']}
-  Email: {EVENT_INFO['email']}
 
 If you believe this was a mistake, reply to this email with your payment
 proof and transaction reference number and we will review it again.
