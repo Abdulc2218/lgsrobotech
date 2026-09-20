@@ -66,7 +66,13 @@
       <p class="read-these">⚠ Please Read These Carefully</p>
       <ol class="pay-steps">
         <li>Transfer the <strong>total fee shown above</strong> to:
-          <p class="bank-box">{{ info.bank }}</p>
+          <div class="bank-box">
+            <div class="bank-row"><span class="bank-label">Bank</span><span class="bank-value">{{ info.bank_name }}</span></div>
+            <div class="bank-row"><span class="bank-label">Account Title</span><span class="bank-value">{{ info.bank_title }}</span></div>
+            <div class="bank-row"><span class="bank-label">Account No.</span><span class="bank-value bank-number">{{ info.bank_account }}</span></div>
+          </div>
+          <small class="bank-check">Check the <strong>account title matches</strong> before you
+            transfer — if it shows a different name, stop and contact us.</small>
         </li>
         <li>Take a screenshot (or photo) of the transaction receipt.</li>
         <li>Enter the <strong>Transaction ID / Reference Number</strong> and upload
