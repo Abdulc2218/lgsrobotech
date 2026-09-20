@@ -1,0 +1,26 @@
+{# Downloadable event-day forms. Included on the home page (Code of Conduct)
+   and on the registration form, so schools meet it wherever they look. #}
+<div class="forms-download">
+  <h3><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> Forms to Print &amp; Bring</h3>
+  <p class="forms-lead">Download both forms, fill and sign them, and
+    <strong>bring the filled hard copies with you on event day</strong> —
+    they must be handed in at the registration desk before any student plays.</p>
+  <div class="forms-list">
+    <a class="form-card" href="{{ url_for('static', filename='forms/waiver-of-liability.pdf') }}" download>
+      <span class="form-icon"><svg class="icon" aria-hidden="true"><use href="#i-file-text"/></svg></span>
+      <span class="form-text">
+        <strong>Waiver of Liability</strong>
+        <small>One per participant — signed by each student</small>
+      </span>
+      <span class="form-dl"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> PDF</span>
+    </a>
+    <a class="form-card" href="{{ url_for('static', filename='forms/chaperone-undertaking.pdf') }}" download>
+      <span class="form-icon"><svg class="icon" aria-hidden="true"><use href="#i-file-text"/></svg></span>
+      <span class="form-text">
+        <strong>Supervision &amp; Chaperone Undertaking</strong>
+        <small>One per school — signed by the School Head and Chaperone</small>
+      </span>
+      <span class="form-dl"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg> PDF</span>
+    </a>
+  </div>
+</div>
