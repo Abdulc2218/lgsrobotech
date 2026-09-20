@@ -174,7 +174,13 @@ EVENT_INFO = {
     # numbers below or Instagram. (The address outgoing mail is *sent from* is
     # a separate setting, the SENDER_EMAIL environment variable.)
     "instagram": "lgswtsportsfest",
-    "bank": "Askari Bank — Account No. 03201650001721",
+    # Where schools send the participation fee. The account TITLE matters as
+    # much as the number — schools should check it matches before transferring.
+    "bank_name": "Askari Bank",
+    "bank_title": "Muhammad Awais Azam",
+    "bank_account": "03201650001700",
+    # One-line form, used where a compact string is wanted (e.g. the footer).
+    "bank": "Askari Bank — Muhammad Awais Azam — Account No. 03201650001700",
     "contact_person": "Muhammad Usman (0323 8409150)",
     "contact_info": "Abdul Qayyum (0321 4091541)",
     "fee_one": FEE_ONE_GAME,
