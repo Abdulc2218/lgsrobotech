@@ -86,51 +86,58 @@ def reg_code(reg_id):
 SPORTS = {
     "volleyball": {
         "name": "Volleyball",
-        "team_size": 6,
+        # team_size is the SQUAD a school may register (on-court players plus
+        # substitutes), not the number on court at once.
+        "team_size": 10,
         "icon": "volleyball",
         "desc": "6-a-side. Send the ball over the net within 3 touches; a point is "
                 "scored on every rally.",
-        "rules": ["Each team has 6 players", "Up to 3 touches before returning the ball",
+        "rules": ["6 players on court — register up to 10 including substitutes",
+                  "Up to 3 touches before returning the ball",
                   "Matches to 25 points, win by 2", "Rally scoring — a point every rally",
                   "Faults: out of bounds, touching the net, or more than 3 touches"],
     },
     "throwball": {
         "name": "Throwball",
-        "team_size": 7,
+        "team_size": 10,
         "icon": "throwball",
         "desc": "7-a-side. Throw the ball over the net into the opponent's court using "
                 "your hands.",
-        "rules": ["Each team has 7 players", "Throw with hands; brief catch & hold allowed",
+        "rules": ["7 players on court — register up to 10 including substitutes",
+                  "Throw with hands; brief catch & hold allowed",
                   "Up to 3 touches before returning", "Serve from behind the baseline",
                   "Matches to 15 or 21 points, win by 2"],
     },
     "futsal": {
         "name": "Futsal",
-        "team_size": 5,
+        "team_size": 8,
         "icon": "ball",
         "desc": "5-a-side indoor football with a smaller low-bounce ball — fast passing "
                 "and ball control.",
-        "rules": ["5 players including a goalkeeper", "Smaller, low-bounce ball",
+        "rules": ["5 on court including a goalkeeper — register up to 8 with substitutes",
+                  "Smaller, low-bounce ball",
                   "Two 20-minute halves", "No offside; kick-ins replace throw-ins",
                   "Unlimited substitutions during play"],
     },
     "dodgeball": {
         "name": "Dodgeball",
-        "team_size": 6,
+        "team_size": 8,
         "icon": "dodgeball",
         "desc": "6-a-side. Eliminate opponents by hitting them (below the shoulders) or "
                 "catching their throw.",
-        "rules": ["Each team has 6 players", "Soft rubber balls; hit below the shoulders",
+        "rules": ["6 players on court — register up to 8 including substitutes",
+                  "Soft rubber balls; hit below the shoulders",
                   "A hit player is eliminated", "Catch a throw → thrower is out & revive a teammate",
                   "Eliminate all opponents to win"],
     },
     "tug-of-war": {
         "name": "Tug of War",
-        "team_size": 8,
+        "team_size": 10,
         "icon": "tug",
         "desc": "Two teams pull the rope from opposite ends — drag the opposing team "
                 "across the line.",
-        "rules": ["Two teams pull from opposite ends", "Pull the opponents across the line",
+        "rules": ["8 pullers per team — register up to 10 including substitutes",
+                  "Two teams pull from opposite ends", "Pull the opponents across the line",
                   "Game begins on the official signal", "No illegal moves"],
     },
     "arm-wrestling": {
