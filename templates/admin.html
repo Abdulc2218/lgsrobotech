@@ -151,6 +151,21 @@
             <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg> Resend Email</button>
         </form>
         {% endif %}
+
+        <details class="danger-zone">
+          <summary>Delete this registration</summary>
+          <p class="danger-note">Permanently removes {{ reg_code(reg.id) }} and its
+            players. <strong>This cannot be undone</strong> and the school is not
+            emailed — use <em>Reject</em> instead if you are turning them down.</p>
+          <form method="post" action="{{ url_for('admin_delete', reg_id=reg.id) }}" class="status-form delete-form">
+            <input type="text" name="confirm_code" required autocomplete="off"
+                   placeholder="Type {{ reg_code(reg.id) }} to confirm"
+                   aria-label="Type {{ reg_code(reg.id) }} to confirm deletion">
+            <button class="btn btn-small btn-reject"
+                    onclick='return confirm({{ ("PERMANENTLY DELETE %s — %s?\n\nThis removes the registration and all its players. It cannot be undone."|format(reg_code(reg.id), reg.school))|tojson }})'>
+              <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg> Delete Permanently</button>
+          </form>
+        </details>
       </div>
     </div>
   </div>
