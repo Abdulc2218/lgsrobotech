@@ -844,6 +844,32 @@ def admin_set_status(reg_id):
     return redirect(url_for("admin"))
 
 
+@app.route("/admin/delete/<int:reg_id>", methods=["POST"])
+def admin_delete(reg_id):
+    """Permanently remove a registration and its players — for test entries and
+    duplicates. The school is NOT emailed; use Reject for a genuine refusal."""
+    if not admin_logged_in():
+        return redirect(url_for("admin_login"))
+    db = get_db()
+    reg = db.execute("SELECT * FROM registrations WHERE id = ?", (reg_id,)).fetchone()
+    if reg is None:
+        flash("That registration no longer exists.", "warn")
+        return redirect(url_for("admin"))
+    # Typing the registration code is the safeguard against a mis-tap.
+    typed = request.form.get("confirm_code", "").strip().upper().replace(" ", "")
+    if typed != reg_code(reg_id).upper():
+        flash(f"{reg_code(reg_id)} was NOT deleted — the confirmation code did "
+              f"not match. Type {reg_code(reg_id)} exactly to confirm.", "warn")
+        return redirect(url_for("admin"))
+    # Explicit, so it works the same whether or not cascade is enforced.
+    db.execute("DELETE FROM players WHERE registration_id = ?", (reg_id,))
+    db.execute("DELETE FROM registrations WHERE id = ?", (reg_id,))
+    db.commit()
+    flash(f"{reg_code(reg_id)} — {reg['school']} was permanently deleted. "
+          f"This cannot be undone.", "ok")
+    return redirect(url_for("admin"))
+
+
 @app.route("/admin/resend/<int:reg_id>", methods=["POST"])
 def admin_resend_email(reg_id):
     if not admin_logged_in():
