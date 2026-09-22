@@ -99,7 +99,7 @@
         {% for r in sp.rules %}<li>{{ r }}</li>{% endfor %}
       </ul>
       <div class="challenge-foot">
-        <span class="fee">{% if sp.team_size == 1 %}Individual{% else %}Team of {{ sp.team_size }}{% endif %}</span>
+        <span class="fee">{% if sp.team_size == 1 %}Individual{% else %}Up to {{ sp.team_size }} players{% endif %}</span>
         <a href="{{ url_for('register') }}" class="btn btn-small">Register</a>
       </div>
     </div>

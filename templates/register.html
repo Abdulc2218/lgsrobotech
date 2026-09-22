@@ -116,7 +116,7 @@
         <select class="sport-select" required>
           <option value="" disabled selected>Select a sport…</option>
           {% for key, sp in sports.items() %}
-          <option value="{{ key }}" data-size="{{ sp.team_size }}" data-name="{{ sp.name }}">{{ sp.name }}{% if sp.team_size > 1 %} — team of {{ sp.team_size }}{% else %} — individual{% endif %}</option>
+          <option value="{{ key }}" data-size="{{ sp.team_size }}" data-name="{{ sp.name }}">{{ sp.name }}{% if sp.team_size > 1 %} — up to {{ sp.team_size }} players{% else %} — individual{% endif %}</option>
           {% endfor %}
         </select>
       </label>
@@ -209,7 +209,7 @@
     var opt = sel.selectedOptions[0];
     var size = opt && opt.dataset.size ? parseInt(opt.dataset.size, 10) : 1;
     block.querySelector(".sport-hint").textContent = opt && opt.value
-      ? (size > 1 ? "Team of " + size + " players (maximum)."
+      ? (size > 1 ? "Register up to " + size + " players, including substitutes."
                   : "Individual event — 1 player, no teammates.")
       : "";
     syncSport(block);
