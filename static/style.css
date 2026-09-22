@@ -353,7 +353,11 @@ button[type="submit"].btn { justify-content: center; width: 100%; }
 /* ===== Sport-centric registration blocks ===== */
 .sport-block { margin-bottom: 1.2rem; background: var(--bg-2); }
 .sport-block-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 0.8rem; margin-bottom: 0.4rem; }
-.sport-select-label { flex: 1; min-width: 0; }
+/* A <select> reports the width of its longest option as its content width even
+   when the box itself is narrower, and that inner overflow propagates all the
+   way up to the page on a small screen. Clipping it here stops that; the select
+   renders its own text truncated, and the native dropdown is unaffected. */
+.sport-select-label { flex: 1; min-width: 0; overflow: hidden; }
 .sport-hint { color: var(--purple-bright); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.8rem; min-height: 1em; text-transform: none; }
 .remove-sport, .remove-player {
   background: transparent; border: 1px solid var(--card-border); color: var(--danger);
